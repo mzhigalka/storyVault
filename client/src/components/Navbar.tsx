@@ -17,7 +17,10 @@ interface NavbarProps {
   onCreateStoryClick: () => void;
 }
 
-export default function Navbar({ onLoginClick, onCreateStoryClick }: NavbarProps) {
+export default function Navbar({
+  onLoginClick,
+  onCreateStoryClick,
+}: NavbarProps) {
   const [location] = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,23 +32,62 @@ export default function Navbar({ onLoginClick, onCreateStoryClick }: NavbarProps
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
               <div className="h-8 w-8 bg-primary rounded-md flex items-center justify-center text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                 </svg>
               </div>
-              <span className="ml-2 text-xl font-bold text-dark">StoryVault</span>
+              <span className="ml-2 text-xl font-bold text-dark">
+                StoryVault
+              </span>
             </Link>
             <nav className="hidden md:ml-6 md:flex space-x-4">
-              <Link href="/" className={`px-3 py-2 rounded-md text-sm font-medium ${location === '/' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}>
+              <Link
+                href="/"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  location === "/"
+                    ? "text-primary"
+                    : "text-dark-light hover:bg-light hover:text-dark"
+                }`}
+              >
                 Home
               </Link>
-              <Link href="/random" className={`px-3 py-2 rounded-md text-sm font-medium ${location === '/random' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}>
+              <Link
+                href="/random"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  location === "/random"
+                    ? "text-primary"
+                    : "text-dark-light hover:bg-light hover:text-dark"
+                }`}
+              >
                 Random
               </Link>
-              <Link href="/expiring" className={`px-3 py-2 rounded-md text-sm font-medium ${location === '/expiring' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}>
+              <Link
+                href="/expiring"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  location === "/expiring"
+                    ? "text-primary"
+                    : "text-dark-light hover:bg-light hover:text-dark"
+                }`}
+              >
                 Expiring Soon
               </Link>
-              <Link href="/stats" className={`px-3 py-2 rounded-md text-sm font-medium ${location === '/stats' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}>
+              <Link
+                href="/stats"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  location === "/stats"
+                    ? "text-primary"
+                    : "text-dark-light hover:bg-light hover:text-dark"
+                }`}
+              >
                 Statistics
               </Link>
             </nav>
@@ -56,10 +98,18 @@ export default function Navbar({ onLoginClick, onCreateStoryClick }: NavbarProps
                 <div className="ml-3 relative">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative rounded-full focus:outline-none focus:ring-2 focus:ring-primary p-0 h-8 w-8">
+                      <Button
+                        variant="ghost"
+                        className="relative rounded-full focus:outline-none focus:ring-2 focus:ring-primary p-0 h-8 w-8"
+                      >
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={user?.avatar || ""} alt={user?.username || "User"} />
-                          <AvatarFallback>{user?.username?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+                          <AvatarImage
+                            src={user?.avatar || ""}
+                            alt={user?.username || "User"}
+                          />
+                          <AvatarFallback>
+                            {user?.username?.charAt(0).toUpperCase() || "U"}
+                          </AvatarFallback>
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
@@ -95,7 +145,7 @@ export default function Navbar({ onLoginClick, onCreateStoryClick }: NavbarProps
                 </Button>
               </div>
             )}
-            
+
             {/* Mobile menu button */}
             <button
               type="button"
@@ -108,43 +158,59 @@ export default function Navbar({ onLoginClick, onCreateStoryClick }: NavbarProps
           </div>
         </div>
       </div>
-      
+
       {/* Mobile menu */}
-      <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+      <div className={`md:hidden ${isMobileMenuOpen ? "block" : "hidden"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1">
-          <Link 
-            href="/" 
-            className={`block px-3 py-2 rounded-md text-base font-medium ${location === '/' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}
+          <Link
+            href="/"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location === "/"
+                ? "text-primary"
+                : "text-dark-light hover:bg-light hover:text-dark"
+            }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Home
           </Link>
-          <Link 
-            href="/random" 
-            className={`block px-3 py-2 rounded-md text-base font-medium ${location === '/random' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}
+          <Link
+            href="/random"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location === "/random"
+                ? "text-primary"
+                : "text-dark-light hover:bg-light hover:text-dark"
+            }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Random
           </Link>
-          <Link 
-            href="/expiring" 
-            className={`block px-3 py-2 rounded-md text-base font-medium ${location === '/expiring' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}
+          <Link
+            href="/expiring"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location === "/expiring"
+                ? "text-primary"
+                : "text-dark-light hover:bg-light hover:text-dark"
+            }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Expiring Soon
           </Link>
-          <Link 
-            href="/stats" 
-            className={`block px-3 py-2 rounded-md text-base font-medium ${location === '/stats' ? 'text-primary' : 'text-dark-light hover:bg-light hover:text-dark'}`}
+          <Link
+            href="/stats"
+            className={`block px-3 py-2 rounded-md text-base font-medium ${
+              location === "/stats"
+                ? "text-primary"
+                : "text-dark-light hover:bg-light hover:text-dark"
+            }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Statistics
           </Link>
-          
+
           {isAuthenticated && (
             <>
-              <Link 
-                href="/my-stories" 
+              <Link
+                href="/my-stories"
                 className="block px-3 py-2 rounded-md text-base font-medium text-dark-light hover:bg-light hover:text-dark"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

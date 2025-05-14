@@ -18,7 +18,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-dark">
-      <Navbar 
+      <Navbar
         onLoginClick={() => setIsLoginModalOpen(true)}
         onCreateStoryClick={() => {
           if (isAuthenticated) {
@@ -28,28 +28,28 @@ export default function Layout({ children }: LayoutProps) {
           }
         }}
       />
-      
+
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {children}
       </main>
-      
+
       <Footer />
-      
+
       {/* Modals */}
-      <StoryViewModal 
+      <StoryViewModal
         story={viewStory}
-        isOpen={!!viewStory} 
-        onClose={() => setViewStory(null)} 
+        isOpen={!!viewStory}
+        onClose={() => setViewStory(null)}
       />
-      
-      <CreateStoryModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
+
+      <CreateStoryModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
       />
-      
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
     </div>
   );

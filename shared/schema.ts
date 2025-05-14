@@ -1,4 +1,11 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -17,7 +24,9 @@ export const stories = pgTable("stories", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   content: text("content").notNull(),
-  authorId: integer("author_id").notNull().references(() => users.id),
+  authorId: integer("author_id")
+    .notNull()
+    .references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   votes: integer("votes").default(0).notNull(),
@@ -27,15 +36,19 @@ export const stories = pgTable("stories", {
 
 export const votes = pgTable("votes", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  storyId: integer("story_id").notNull().references(() => stories.id),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  storyId: integer("story_id")
+    .notNull()
+    .references(() => stories.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // User schemas
-export const insertUserSchema = createInsertSchema(users).omit({ 
-  id: true, 
-  createdAt: true 
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
 });
 
 export const userLoginSchema = z.object({
@@ -52,20 +65,30 @@ export const userSocialLoginSchema = z.object({
 });
 
 // Story schemas
-export const insertStorySchema = createInsertSchema(stories).omit({ 
-  id: true, 
-  createdAt: true, 
-  authorId: true, 
-  votes: true, 
-  accessToken: true 
+export const insertStorySchema = createInsertSchema(stories).omit({
+  id: true,
+  createdAt: true,
+  authorId: true,
+  votes: true,
+  accessToken: true,
 });
 
-export const storyLifetimeSchema = z.enum(["1h", "3h", "6h", "12h", "1d", "3d", "1w", "2w", "1m"]);
+export const storyLifetimeSchema = z.enum([
+  "1h",
+  "3h",
+  "6h",
+  "12h",
+  "1d",
+  "3d",
+  "1w",
+  "2w",
+  "1m",
+]);
 
 // Votes schemas
-export const insertVoteSchema = createInsertSchema(votes).omit({ 
-  id: true, 
-  createdAt: true 
+export const insertVoteSchema = createInsertSchema(votes).omit({
+  id: true,
+  createdAt: true,
 });
 
 // Types
@@ -84,7 +107,7 @@ export type InsertVote = z.infer<typeof insertVoteSchema>;
 // Helper function to calculate expiry date from lifetime string
 export function calculateExpiryDate(lifetime: StoryLifetime): Date {
   const now = new Date();
-  
+
   switch (lifetime) {
     case "1h":
       return new Date(now.getTime() + 60 * 60 * 1000);

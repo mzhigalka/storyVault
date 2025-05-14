@@ -163,7 +163,7 @@ export default function StoryCard({
             <Button
               variant="ghost"
               size="sm"
-              className={`text-muted p-0 ${
+              className={`text-muted-all p-0 ${
                 hasVoted ? "text-primary" : "hover:text-primary"
               } ${isVoting ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={handleVote}
