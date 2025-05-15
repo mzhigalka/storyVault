@@ -52,11 +52,9 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import memorystore from "memorystore";
 
-// Time to live for session in milliseconds
 const SESSION_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup session middleware with MongoDB session store
   const MemoryStore = memorystore(session);
   app.use(
     session({
@@ -73,11 +71,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })
   );
 
-  // Initialize passport
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Configure passport serialization
   passport.serializeUser((user: any, done) => {
     done(null, user._id ? user._id.toString() : user.id);
   });
@@ -91,7 +87,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Local strategy for email/password login
   passport.use(
     new LocalStrategy(
       { usernameField: "email" },
@@ -125,7 +120,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     )
   );
 
-  // Google OAuth strategy
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     passport.use(
       new GoogleStrategy(
@@ -136,11 +130,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
-            // Check if user exists
             let user = await storage.getUserByProvider("google", profile.id);
 
             if (!user) {
-              // Create new user if doesn't exist
               const email =
                 profile.emails && profile.emails[0]
                   ? profile.emails[0].value
@@ -154,7 +146,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 return done(new Error("Email is required"));
               }
 
-              // Check if email already exists with different provider
               const existingUser = await storage.getUserByEmail(email);
               if (existingUser) {
                 return done(null, existingUser);
@@ -179,7 +170,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     );
   }
 
-  // Facebook OAuth strategy
   if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
     passport.use(
       new FacebookStrategy(
@@ -195,7 +185,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             let user = await storage.getUserByProvider("facebook", profile.id);
 
             if (!user) {
-              // Create new user if doesn't exist
               const email =
                 profile.emails && profile.emails[0]
                   ? profile.emails[0].value
@@ -209,7 +198,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 return done(new Error("Email is required"));
               }
 
-              // Check if email already exists with different provider
               const existingUser = await storage.getUserByEmail(email);
               if (existingUser) {
                 return done(null, existingUser);
@@ -234,7 +222,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     );
   }
 
-  // Authentication middleware
   function isAuthenticated(req: Request, res: Response, next: Function) {
     if (req.isAuthenticated()) {
       return next();
@@ -242,27 +229,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(401).json({ message: "Unauthorized" });
   }
 
-  // Auth routes
   app.post("/api/auth/register", async (req, res) => {
     try {
       const userData = insertUserSchema.parse(req.body);
 
-      // Check if user already exists
       const existingUser = await storage.getUserByEmail(userData.email);
       if (existingUser) {
         return res.status(400).json({ message: "Email already in use" });
       }
 
-      // Hash password
       const hashedPassword = await bcrypt.hash(userData.password || "", 10);
 
-      // Create user
       const user = await storage.createUser({
         ...userData,
         password: hashedPassword,
       });
 
-      // Log user in
       req.login(user, (err) => {
         if (err) {
           return res
@@ -270,7 +252,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             .json({ message: "Error logging in after registration" });
         }
 
-        // Return sanitized user data (without password)
         const { password, ...userWithoutPassword } = user;
         return res.status(201).json(userWithoutPassword);
       });
@@ -304,7 +285,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(500).json({ message: "Error logging in" });
           }
 
-          // Return sanitized user data (without password)
           const { password, ...userWithoutPassword } = user;
           return res.json(userWithoutPassword);
         });
@@ -368,12 +348,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     const user = req.user as any;
-    // Sanitize user data (without password)
     const { password, ...userWithoutPassword } = user;
     res.json(userWithoutPassword);
   });
 
-  // Story routes
   app.post("/api/stories", isAuthenticated, async (req, res) => {
     try {
       const storyData = insertStorySchema.parse(req.body.story);
@@ -382,7 +360,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = req.user as any;
       const userId = user._id ? user._id.toString() : user.id;
 
-      // Log debugging info
       console.log("Creating story with user ID:", userId);
       console.log("User data:", user);
 
@@ -470,7 +447,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Story not found" });
       }
 
-      // Check if story has expired and is public
       const now = new Date();
       if (story.expiresAt < now && story.isPublic) {
         return res.status(410).json({ message: "Story has expired" });
@@ -511,7 +487,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .json({ message: "Користувач не автентифікований" });
       }
 
-      // Отримуємо ID користувача залежно від його формату у базі даних
       const userId = user._id ? user._id.toString() : user.id;
       if (!userId) {
         return res
@@ -523,13 +498,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("User data for voting:", user);
       console.log("User ID for voting:", userId);
 
-      // Check if story exists
       const story = await storage.getStory(storyId);
       if (!story) {
         return res.status(404).json({ message: "Історія не знайдена" });
       }
 
-      // Check if story has expired
       const now = new Date();
       if (story.expiresAt < now) {
         return res
@@ -537,23 +510,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .json({ message: "Не можна голосувати за прострочені історії" });
       }
 
-      // Вызываем метод голосования, который теперь также поддерживает отмену голоса
       await storage.voteStory(storyId, userId);
 
-      // Get updated story
       const updatedStory = await storage.getStory(storyId);
 
-      // Определяем, проголосовал ли пользователь после операции
       const hasVotedNow = await storage.hasVoted(storyId, userId);
 
-      // Добавляем информацию о статусе голоса в ответ
       res.json({
         ...updatedStory,
         hasVoted: hasVotedNow,
       });
     } catch (error) {
       console.error("Error voting for story:", error);
-      // Відправляємо більш детальну помилку клієнту
       const errorMessage =
         error instanceof Error
           ? error.message
@@ -566,7 +534,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stats routes
   app.get("/api/stats", async (req, res) => {
     try {
       const stats = await storage.getStats();
@@ -576,7 +543,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create HTTP server
   const httpServer = createServer(app);
 
   return httpServer;

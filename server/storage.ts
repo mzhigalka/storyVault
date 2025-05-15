@@ -2,7 +2,6 @@ import { nanoid } from "nanoid";
 import { ObjectId } from "mongodb";
 import { getCollections } from "./mongodb";
 
-// Define the MongoDB document types
 export interface UserDocument {
   _id?: ObjectId;
   username: string;
@@ -33,7 +32,6 @@ export interface VoteDocument {
   createdAt: Date;
 }
 
-// Type aliases to maintain compatibility with the existing interface
 export type User = UserDocument;
 export type Story = StoryDocument;
 export type Vote = VoteDocument;
@@ -51,9 +49,7 @@ export type StoryLifetime =
   | "2w"
   | "1m";
 
-// Interface for all storage operations
 export interface IStorage {
-  // User operations
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByProvider(
@@ -62,7 +58,6 @@ export interface IStorage {
   ): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
 
-  // Story operations
   getStory(id: string): Promise<Story | undefined>;
   getStoryByAccessToken(accessToken: string): Promise<Story | undefined>;
   getStoriesByAuthor(authorId: string): Promise<Story[]>;
@@ -81,7 +76,6 @@ export interface IStorage {
   voteStory(storyId: string, userId: string): Promise<void>;
   hasVoted(storyId: string, userId: string): Promise<boolean>;
 
-  // Stats operations
   getStats(): Promise<{
     total: number;
     available: number;
@@ -90,7 +84,6 @@ export interface IStorage {
   }>;
 }
 
-// Helper function to calculate expiry date from lifetime string
 export function calculateExpiryDate(lifetime: StoryLifetime): Date {
   const now = new Date();
 
@@ -114,7 +107,7 @@ export function calculateExpiryDate(lifetime: StoryLifetime): Date {
     case "1m":
       return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
     default:
-      return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Default to 1 week
+      return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   }
 }
 
@@ -189,8 +182,8 @@ export class MongoDBStorage implements IStorage {
     console.log("Getting stories for author ID:", authorId);
 
     try {
-      // Convert to ObjectId if it's a valid MongoDB ObjectId
       let query = {};
+
       try {
         query = { authorId: new ObjectId(authorId) };
       } catch (err) {
@@ -221,17 +214,13 @@ export class MongoDBStorage implements IStorage {
     );
 
     try {
-      // Create the base query for public stories that haven't expired
       const query = { isPublic: true, expiresAt: { $gt: now } };
 
-      // Get total count matching the query
       const total = await collections.stories.countDocuments(query);
 
-      // Create sort criteria
       const sortCriteria: any =
         sort === "latest" ? { createdAt: -1 } : { votes: -1 };
 
-      // Get paginated results
       const skip = (page - 1) * limit;
       const stories = await collections.stories
         .find(query)
@@ -240,7 +229,6 @@ export class MongoDBStorage implements IStorage {
         .limit(limit)
         .toArray();
 
-      // Populate author data for each story
       const storiesWithAuthors = await Promise.all(
         stories.map(async (story) => {
           try {
@@ -251,7 +239,6 @@ export class MongoDBStorage implements IStorage {
 
             const author = await this.getUser(authorIdStr);
 
-            // Create a new object that includes author information
             const storyWithAuthor: any = {
               ...story,
             };
@@ -292,18 +279,15 @@ export class MongoDBStorage implements IStorage {
     console.log("Getting random story");
 
     try {
-      // Get all public stories that haven't expired
       const publicStories = await collections.stories
         .find({ isPublic: true, expiresAt: { $gt: now } })
         .toArray();
 
       if (publicStories.length === 0) return undefined;
 
-      // Get a random story
       const randomIndex = Math.floor(Math.random() * publicStories.length);
       const story = publicStories[randomIndex];
 
-      // Add author information
       try {
         const authorIdStr =
           story.authorId instanceof ObjectId
@@ -312,7 +296,6 @@ export class MongoDBStorage implements IStorage {
 
         const author = await this.getUser(authorIdStr);
 
-        // Create a new object that includes author information
         const storyWithAuthor = {
           ...story,
         } as any;
@@ -342,19 +325,18 @@ export class MongoDBStorage implements IStorage {
 
     switch (timeframe) {
       case "hour":
-        expiryLimit = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour
+        expiryLimit = new Date(now.getTime() + 60 * 60 * 1000);
         break;
       case "day":
-        expiryLimit = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 1 day
+        expiryLimit = new Date(now.getTime() + 24 * 60 * 60 * 1000);
         break;
       case "week":
-        expiryLimit = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 1 week
+        expiryLimit = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
         break;
       default:
-        expiryLimit = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Default 1 day
+        expiryLimit = new Date(now.getTime() + 24 * 60 * 60 * 1000);
     }
 
-    // Get all public stories that will expire within the timeframe
     const expiringStories = await collections.stories
       .find({
         isPublic: true,
@@ -364,7 +346,6 @@ export class MongoDBStorage implements IStorage {
 
     if (expiringStories.length === 0) return undefined;
 
-    // Get a random story
     const randomIndex = Math.floor(Math.random() * expiringStories.length);
     return expiringStories[randomIndex];
   }
@@ -400,7 +381,6 @@ export class MongoDBStorage implements IStorage {
     console.log("Voting - User ID:", userId);
 
     try {
-      // Проверяем, является ли storyId и userId валидными ObjectId
       let storyObjectId;
       let userObjectId;
 
@@ -412,24 +392,20 @@ export class MongoDBStorage implements IStorage {
         throw new Error("Некорректный формат ID для истории или пользователя");
       }
 
-      // Проверяем, существует ли история
       const story = await this.getStory(storyId);
       if (!story) {
         throw new Error("История не найдена");
       }
 
-      // Проверяем, голосовал ли пользователь уже
       const existingVote = await collections.votes.findOne({
         storyId: storyObjectId,
         userId: userObjectId,
       });
 
       if (existingVote) {
-        // Если голос уже существует, удаляем его (отменяем голос)
         console.log("Удаляем существующий голос");
         await collections.votes.deleteOne({ _id: existingVote._id });
 
-        // Уменьшаем счетчик голосов
         console.log("Уменьшаем счетчик голосов");
         await collections.stories.updateOne(
           { _id: storyObjectId },
@@ -440,7 +416,6 @@ export class MongoDBStorage implements IStorage {
         return;
       }
 
-      // Создаем новый голос
       const now = new Date();
       const voteDoc = {
         userId: userObjectId,
@@ -451,7 +426,6 @@ export class MongoDBStorage implements IStorage {
       console.log("Добавляем новый голос:", voteDoc);
       await collections.votes.insertOne(voteDoc);
 
-      // Увеличиваем счетчик голосов
       console.log("Увеличиваем счетчик голосов");
       await collections.stories.updateOne(
         { _id: storyObjectId },
@@ -496,22 +470,18 @@ export class MongoDBStorage implements IStorage {
     const hourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
     const dayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    // Get total count of all stories
     const total = await collections.stories.countDocuments();
 
-    // Get count of available stories
     const available = await collections.stories.countDocuments({
       isPublic: true,
       expiresAt: { $gt: now },
     });
 
-    // Get count of stories expiring today
     const expiringToday = await collections.stories.countDocuments({
       isPublic: true,
       expiresAt: { $gt: now, $lt: dayFromNow },
     });
 
-    // Get count of stories expiring in the next hour
     const expiringHour = await collections.stories.countDocuments({
       isPublic: true,
       expiresAt: { $gt: now, $lt: hourFromNow },
