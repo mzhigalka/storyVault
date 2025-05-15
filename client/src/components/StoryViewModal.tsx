@@ -152,7 +152,7 @@ export default function StoryViewModal({
           <div className="flex items-center">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={story.authorAvatar || ""}
+                src={story.author.avatar}
                 alt={story.authorName || "Author"}
               />
               <AvatarFallback>
@@ -160,7 +160,7 @@ export default function StoryViewModal({
               </AvatarFallback>
             </Avatar>
             <span className="ml-2 text-sm font-medium text-dark-light">
-              {story.authorName || "Anonymous"}
+              {story.author?.username || "Anonymous"}
             </span>
           </div>
           {!isExpired && (

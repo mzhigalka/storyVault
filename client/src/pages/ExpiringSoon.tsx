@@ -131,7 +131,7 @@ export default function ExpiringSoon() {
           <div className="text-center py-12 w-full max-w-3xl">
             <div className="bg-white rounded-lg shadow-sm p-8 border border-light">
               <h2 className="text-xl font-bold mb-4">No Stories Found</h2>
-              <p className="text-muted mb-6">
+              <p className="text-muted-all mb-6">
                 {(error as Error).message ||
                   `No stories expiring within the ${selectedTimeframe} timeframe were found.`}
               </p>
@@ -158,7 +158,7 @@ export default function ExpiringSoon() {
           <div className="text-center py-12 w-full max-w-3xl">
             <div className="bg-white rounded-lg shadow-sm p-8 border border-light">
               <h2 className="text-xl font-bold mb-4">No Expiring Stories</h2>
-              <p className="text-muted mb-6">
+              <p className="text-muted-all mb-6">
                 There are no stories expiring within the selected timeframe.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -184,7 +184,7 @@ export default function ExpiringSoon() {
             />
 
             <div className="mt-8 text-center">
-              <p className="text-muted mb-6">
+              <p className="text-muted-all mb-6">
                 Want to see another expiring story?
               </p>
               <Button

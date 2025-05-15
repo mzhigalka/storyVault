@@ -19,6 +19,11 @@ interface StoryCardProps {
     expiresAt: string | Date;
     votes: number;
     accessToken: string;
+    authorId?: string;
+    author?: {
+      username: string;
+      avatar?: string;
+    };
   };
   onVote?: (storyId: number) => void;
   hasVoted?: boolean;
@@ -103,17 +108,17 @@ export default function StoryCard({
     if (hoursLeft < 1) {
       return {
         text: `Expires in ${formatTimeRemaining(expiresAt)}`,
-        className: "bg-error/10 text-muted-all",
+        className: "bg-error/10 text-error",
       };
     } else if (hoursLeft < 24) {
       return {
         text: `Expires in ${formatTimeRemaining(expiresAt)}`,
-        className: "bg-warning/10 text-muted-all",
+        className: "bg-warning/10 text-warning",
       };
     } else {
       return {
         text: `Expires in ${formatTimeRemaining(expiresAt)}`,
-        className: "bg-secondary/10 text-muted-all",
+        className: "bg-secondary/10 text-secondary",
       };
     }
   };
@@ -129,9 +134,37 @@ export default function StoryCard({
     <Card className="bg-white rounded-lg shadow-sm overflow-hidden border border-light hover:shadow-md transition-shadow">
       <CardContent className="p-5">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-xs font-medium text-muted-all">
-            Posted {formatDistanceToNow(createdAt, { addSuffix: true })}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-xs font-medium text-muted-all">
+              Posted {formatDistanceToNow(createdAt, { addSuffix: true })}
+            </span>
+            <span className="text-xs text-muted-all flex items-center mt-1">
+              <span className="inline-block h-4 w-4 rounded-full bg-gray-200 mr-1.5 overflow-hidden">
+                {story.author?.avatar ? (
+                  <img
+                    src={story.author.avatar}
+                    alt="Avatar"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-full w-full text-gray-500 p-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                )}
+              </span>
+              {story.author?.username || "Anonymous"}
+            </span>
+          </div>
           <span
             className={`countdown-timer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${expiryStatus.className}`}
           >

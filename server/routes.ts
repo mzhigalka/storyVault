@@ -381,10 +381,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const lifetime = storyLifetimeSchema.parse(req.body.lifetime);
 
       const user = req.user as any;
-      const story = await storage.createStory(storyData, user.id, lifetime);
+      const userId = user._id ? user._id.toString() : user.id;
+
+      // Log debugging info
+      console.log("Creating story with user ID:", userId);
+      console.log("User data:", user);
+
+      const story = await storage.createStory(storyData, userId, lifetime);
 
       res.status(201).json(story);
     } catch (error) {
+      console.error("Error creating story:", error);
+
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
         return res.status(400).json({ message: validationError.message });
@@ -410,9 +418,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/stories/author", isAuthenticated, async (req, res) => {
     try {
       const user = req.user as any;
-      const stories = await storage.getStoriesByAuthor(user.id);
+      const userId = user._id ? user._id.toString() : user.id;
+
+      console.log("Getting author stories - User data:", user);
+      console.log("Getting author stories - User ID:", userId);
+
+      const stories = await storage.getStoriesByAuthor(userId);
       res.json(stories);
     } catch (error) {
+      console.error("Error fetching author stories:", error);
       res.status(500).json({ message: "Error fetching author stories" });
     }
   });
@@ -490,6 +504,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = req.user as any;
       const userId = user._id ? user._id.toString() : user.id;
 
+      console.log("Voting on story ID:", storyId);
+      console.log("User data for voting:", user);
+      console.log("User ID for voting:", userId);
+
       // Check if story exists
       const story = await storage.getStory(storyId);
       if (!story) {
@@ -518,6 +536,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedStory = await storage.getStory(storyId);
       res.json(updatedStory);
     } catch (error) {
+      console.error("Error voting for story:", error);
       res.status(500).json({ message: "Error voting for story" });
     }
   });

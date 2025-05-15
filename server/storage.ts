@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 import { ObjectId } from "mongodb";
 import { getCollections } from "./mongodb";
 
+// Define the MongoDB document types
 export interface UserDocument {
   _id?: ObjectId;
   username: string;
@@ -120,8 +121,26 @@ export function calculateExpiryDate(lifetime: StoryLifetime): Date {
 export class MongoDBStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
     const collections = await getCollections();
-    const user = await collections.users.findOne({ _id: new ObjectId(id) });
-    return user || undefined;
+
+    console.log("Getting user by ID:", id);
+
+    try {
+      let objectId;
+      try {
+        objectId = new ObjectId(id);
+      } catch (error) {
+        console.error("Invalid ObjectId format:", id);
+        return undefined;
+      }
+
+      const user = await collections.users.findOne({ _id: objectId });
+      console.log("User found:", !!user);
+
+      return user || undefined;
+    } catch (error) {
+      console.error("Error getting user by ID:", error);
+      return undefined;
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
@@ -166,10 +185,27 @@ export class MongoDBStorage implements IStorage {
 
   async getStoriesByAuthor(authorId: string): Promise<Story[]> {
     const collections = await getCollections();
-    const stories = await collections.stories
-      .find({ authorId: new ObjectId(authorId) })
-      .toArray();
-    return stories;
+
+    console.log("Getting stories for author ID:", authorId);
+
+    try {
+      // Convert to ObjectId if it's a valid MongoDB ObjectId
+      let query = {};
+      try {
+        query = { authorId: new ObjectId(authorId) };
+      } catch (err) {
+        console.log("Invalid ObjectId format, using raw string:", authorId);
+        query = { authorId: authorId };
+      }
+
+      console.log("Query for getStoriesByAuthor:", query);
+      const stories = await collections.stories.find(query).toArray();
+      console.log(`Found ${stories.length} stories for author`);
+      return stories;
+    } catch (error) {
+      console.error("Error getting stories by author:", error);
+      return [];
+    }
   }
 
   async getPublicStories(
@@ -180,45 +216,123 @@ export class MongoDBStorage implements IStorage {
     const collections = await getCollections();
     const now = new Date();
 
-    // Create the base query for public stories that haven't expired
-    const query = { isPublic: true, expiresAt: { $gt: now } };
+    console.log(
+      `Getting public stories: sort=${sort}, page=${page}, limit=${limit}`
+    );
 
-    // Get total count matching the query
-    const total = await collections.stories.countDocuments(query);
+    try {
+      // Create the base query for public stories that haven't expired
+      const query = { isPublic: true, expiresAt: { $gt: now } };
 
-    // Create sort criteria
-    const sortCriteria: any =
-      sort === "latest" ? { createdAt: -1 } : { votes: -1 };
+      // Get total count matching the query
+      const total = await collections.stories.countDocuments(query);
 
-    // Get paginated results
-    const skip = (page - 1) * limit;
-    const stories = await collections.stories
-      .find(query)
-      .sort(sortCriteria)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
+      // Create sort criteria
+      const sortCriteria: any =
+        sort === "latest" ? { createdAt: -1 } : { votes: -1 };
 
-    return {
-      stories: stories as StoryDocument[],
-      total,
-    };
+      // Get paginated results
+      const skip = (page - 1) * limit;
+      const stories = await collections.stories
+        .find(query)
+        .sort(sortCriteria)
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+
+      // Populate author data for each story
+      const storiesWithAuthors = await Promise.all(
+        stories.map(async (story) => {
+          try {
+            const authorIdStr =
+              story.authorId instanceof ObjectId
+                ? story.authorId.toString()
+                : String(story.authorId);
+
+            const author = await this.getUser(authorIdStr);
+
+            // Create a new object that includes author information
+            const storyWithAuthor: any = {
+              ...story,
+            };
+
+            if (author) {
+              storyWithAuthor.author = {
+                username: author.username,
+                avatar: author.avatar,
+              };
+            }
+
+            return storyWithAuthor;
+          } catch (error) {
+            console.error(
+              `Error getting author for story ${story._id}:`,
+              error
+            );
+            return story;
+          }
+        })
+      );
+
+      console.log(`Found ${stories.length} public stories`);
+      return {
+        stories: storiesWithAuthors,
+        total,
+      };
+    } catch (error) {
+      console.error("Error getting public stories:", error);
+      return { stories: [], total: 0 };
+    }
   }
 
   async getRandomStory(): Promise<Story | undefined> {
     const collections = await getCollections();
     const now = new Date();
 
-    // Get all public stories that haven't expired
-    const publicStories = await collections.stories
-      .find({ isPublic: true, expiresAt: { $gt: now } })
-      .toArray();
+    console.log("Getting random story");
 
-    if (publicStories.length === 0) return undefined;
+    try {
+      // Get all public stories that haven't expired
+      const publicStories = await collections.stories
+        .find({ isPublic: true, expiresAt: { $gt: now } })
+        .toArray();
 
-    // Get a random story
-    const randomIndex = Math.floor(Math.random() * publicStories.length);
-    return publicStories[randomIndex];
+      if (publicStories.length === 0) return undefined;
+
+      // Get a random story
+      const randomIndex = Math.floor(Math.random() * publicStories.length);
+      const story = publicStories[randomIndex];
+
+      // Add author information
+      try {
+        const authorIdStr =
+          story.authorId instanceof ObjectId
+            ? story.authorId.toString()
+            : String(story.authorId);
+
+        const author = await this.getUser(authorIdStr);
+
+        // Create a new object that includes author information
+        const storyWithAuthor = {
+          ...story,
+        } as any;
+
+        if (author) {
+          storyWithAuthor.author = {
+            username: author.username,
+            avatar: author.avatar,
+          };
+        }
+
+        return storyWithAuthor;
+      } catch (error) {
+        console.error(`Error getting author for random story:`, error);
+        return story;
+      }
+    } catch (error) {
+      console.error("Error getting random story:", error);
+      return undefined;
+    }
   }
 
   async getRandomExpiringStory(timeframe: string): Promise<Story | undefined> {
@@ -282,42 +396,65 @@ export class MongoDBStorage implements IStorage {
   async voteStory(storyId: string, userId: string): Promise<void> {
     const collections = await getCollections();
 
-    // Check if story exists
-    const story = await this.getStory(storyId);
-    if (!story) {
-      throw new Error("Story not found");
+    console.log("Voting - Story ID:", storyId);
+    console.log("Voting - User ID:", userId);
+
+    try {
+      // Check if story exists
+      const story = await this.getStory(storyId);
+      if (!story) {
+        throw new Error("Story not found");
+      }
+
+      // Check if user has already voted
+      const hasVoted = await this.hasVoted(storyId, userId);
+      if (hasVoted) {
+        throw new Error("User has already voted for this story");
+      }
+
+      // Create a new vote
+      const now = new Date();
+      const voteDoc = {
+        userId: new ObjectId(userId),
+        storyId: new ObjectId(storyId),
+        createdAt: now,
+      };
+
+      console.log("Inserting vote:", voteDoc);
+      await collections.votes.insertOne(voteDoc);
+
+      // Increment story votes
+      console.log("Incrementing story votes count");
+      await collections.stories.updateOne(
+        { _id: new ObjectId(storyId) },
+        { $inc: { votes: 1 } }
+      );
+
+      console.log("Vote successfully created");
+    } catch (error) {
+      console.error("Error in voteStory method:", error);
+      throw error;
     }
-
-    // Check if user has already voted
-    const hasVoted = await this.hasVoted(storyId, userId);
-    if (hasVoted) {
-      throw new Error("User has already voted for this story");
-    }
-
-    // Create a new vote
-    const now = new Date();
-    await collections.votes.insertOne({
-      userId: new ObjectId(userId),
-      storyId: new ObjectId(storyId),
-      createdAt: now,
-    });
-
-    // Increment story votes
-    await collections.stories.updateOne(
-      { _id: new ObjectId(storyId) },
-      { $inc: { votes: 1 } }
-    );
   }
 
   async hasVoted(storyId: string, userId: string): Promise<boolean> {
     const collections = await getCollections();
 
-    const vote = await collections.votes.findOne({
-      storyId: new ObjectId(storyId),
-      userId: new ObjectId(userId),
-    });
+    console.log("Checking if user has voted - Story ID:", storyId);
+    console.log("Checking if user has voted - User ID:", userId);
 
-    return !!vote;
+    try {
+      const vote = await collections.votes.findOne({
+        storyId: new ObjectId(storyId),
+        userId: new ObjectId(userId),
+      });
+
+      console.log("Vote found:", !!vote);
+      return !!vote;
+    } catch (error) {
+      console.error("Error checking if user has voted:", error);
+      return false;
+    }
   }
 
   async getStats(): Promise<{
