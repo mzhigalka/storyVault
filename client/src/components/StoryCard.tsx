@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 
 interface StoryCardProps {
   story: {
-    id: number;
+    id: number | string;
+    _id?: string;
     title: string;
     content: string;
     createdAt: string | Date;
@@ -25,7 +26,7 @@ interface StoryCardProps {
       avatar?: string;
     };
   };
-  onVote?: (storyId: number) => void;
+  onVote?: (storyId: number | string) => void;
   hasVoted?: boolean;
   onViewClick?: () => void;
 }
@@ -43,22 +44,46 @@ export default function StoryCard({
   const isExpired = isPast(expiresAt);
 
   const { mutate: voteForStory, isPending: isVoting } = useMutation({
-    mutationFn: async (storyId: number) => {
-      const res = await apiRequest("POST", `/api/stories/${storyId}/vote`, {});
+    mutationFn: async (storyId: string | number) => {
+      // Перетворюємо ID на рядок для правильного передавання у запит
+      const storyIdStr =
+        typeof storyId === "string" ? storyId : String(storyId);
+
+      console.log("Voting for story ID:", storyIdStr);
+      console.log("Story object:", story);
+
+      if (!storyIdStr) {
+        throw new Error("Не можна голосувати: ID історії відсутній");
+      }
+
+      // Виконуємо запит голосування
+      const res = await apiRequest(
+        "POST",
+        `/api/stories/${storyIdStr}/vote`,
+        {}
+      );
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `Помилка сервера: ${res.status}`);
+      }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/stories"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/stories", story.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/stories", story._id || story.id],
+      });
       if (onVote) {
-        onVote(story.id);
+        onVote(story._id || story.id);
       }
     },
     onError: (error: any) => {
+      console.error("Vote error:", error);
       toast({
-        title: "Error",
+        title: "Помилка",
         description:
-          error.message || "Could not vote for this story. Please try again.",
+          error.message ||
+          "Не вдалося проголосувати за цю історію. Спробуйте пізніше.",
         variant: "destructive",
       });
     },
@@ -67,38 +92,31 @@ export default function StoryCard({
   const handleVote = () => {
     if (!isAuthenticated) {
       toast({
-        title: "Authentication Required",
-        description: "Please log in to vote for stories.",
+        title: "Потрібна авторизація",
+        description: "Будь ласка, увійдіть щоб голосувати за історії.",
         variant: "default",
       });
       return;
     }
 
-    if (hasVoted) {
-      toast({
-        title: "Already Voted",
-        description: "You have already voted for this story.",
-        variant: "default",
-      });
-      return;
-    }
+    // Убираем проверку - теперь голосование работает как переключатель
 
     if (isExpired) {
       toast({
-        title: "Story Expired",
-        description: "You cannot vote for expired stories.",
+        title: "Історія прострочена",
+        description: "Не можна голосувати за прострочені історії.",
         variant: "default",
       });
       return;
     }
 
-    voteForStory(story.id);
+    voteForStory(story._id || story.id);
   };
 
   // Calculate time status for display
   const getExpiryStatus = () => {
     if (isExpired) {
-      return { text: "Expired", className: "bg-muted/10 text-muted-all" };
+      return { text: "Закінчено", className: "bg-muted/10 text-muted-all" };
     }
 
     const hoursLeft = Math.floor(
@@ -107,18 +125,18 @@ export default function StoryCard({
 
     if (hoursLeft < 1) {
       return {
-        text: `Expires in ${formatTimeRemaining(expiresAt)}`,
-        className: "bg-error/10 text-error",
+        text: `Закінчиться за ${formatTimeRemaining(expiresAt)}`,
+        className: "bg-warning/10 text-warning",
       };
     } else if (hoursLeft < 24) {
       return {
-        text: `Expires in ${formatTimeRemaining(expiresAt)}`,
+        text: `Закінчиться за ${formatTimeRemaining(expiresAt)}`,
         className: "bg-warning/10 text-warning",
       };
     } else {
       return {
-        text: `Expires in ${formatTimeRemaining(expiresAt)}`,
-        className: "bg-secondary/10 text-secondary",
+        text: `Закінчиться за ${formatTimeRemaining(expiresAt)}`,
+        className: "bg-warning/10 text-warning",
       };
     }
   };
@@ -136,7 +154,7 @@ export default function StoryCard({
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col">
             <span className="text-xs font-medium text-muted-all">
-              Posted {formatDistanceToNow(createdAt, { addSuffix: true })}
+              Опубліковано {formatDistanceToNow(createdAt, { addSuffix: true })}
             </span>
             <span className="text-xs text-muted-all flex items-center mt-1">
               <span className="inline-block h-4 w-4 rounded-full bg-gray-200 mr-1.5 overflow-hidden">
@@ -162,7 +180,7 @@ export default function StoryCard({
                   </svg>
                 )}
               </span>
-              {story.author?.username || "Anonymous"}
+              {story.author?.username || "Анонім"}
             </span>
           </div>
           <span
@@ -217,7 +235,7 @@ export default function StoryCard({
               className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 p-0"
               onClick={onViewClick}
             >
-              Read more
+              Читати далі
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 ml-1"
@@ -237,7 +255,7 @@ export default function StoryCard({
               href={`/story/${story.id}`}
               className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80"
             >
-              Read more
+              Читати далі
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 ml-1"

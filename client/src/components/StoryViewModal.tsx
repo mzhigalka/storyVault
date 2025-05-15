@@ -86,23 +86,19 @@ export default function StoryViewModal({
   const handleShare = () => {
     if (!story) return;
 
-    // Create a shareable link with the story access token
     const shareUrl = `${window.location.origin}/s/${story.accessToken}`;
 
-    // Use the Web Share API if available
     if (navigator.share) {
       navigator
         .share({
           title: story.title,
-          text: "Check out this story on StoryVault",
+          text: "Check out this story on ShitHappens",
           url: shareUrl,
         })
         .catch(() => {
-          // Fallback to clipboard
           copyToClipboard(shareUrl);
         });
     } else {
-      // Fallback to clipboard
       copyToClipboard(shareUrl);
     }
   };
@@ -112,14 +108,15 @@ export default function StoryViewModal({
       .writeText(text)
       .then(() => {
         toast({
-          title: "Link Copied!",
-          description: "Story link copied to clipboard.",
+          title: "Посилання скопійовано!",
+          description: "Посилання на історію скопіюється на буфер обміну.",
         });
       })
       .catch(() => {
         toast({
-          title: "Error",
-          description: "Could not copy the link. Please try again.",
+          title: "Помилка",
+          description:
+            "Не міг скопіювати посилання.Будь ласка, спробуйте ще раз.",
           variant: "destructive",
         });
       });
@@ -138,29 +135,21 @@ export default function StoryViewModal({
           <DialogTitle className="text-xl font-bold text-dark">
             {story.title}
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 rounded-full"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={story.author.avatar}
-                alt={story.authorName || "Author"}
+                src={story.author?.avatar}
+                alt={story.authorName || "Автор"}
               />
               <AvatarFallback>
                 {story.authorName?.charAt(0).toUpperCase() || "A"}
               </AvatarFallback>
             </Avatar>
             <span className="ml-2 text-sm font-medium text-dark-light">
-              {story.author?.username || "Anonymous"}
+              {story.author?.username || "Анонім"}
             </span>
           </div>
           {!isExpired && (
@@ -186,7 +175,7 @@ export default function StoryViewModal({
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
-              Expires in {formatTimeRemaining(storyExpiresAt)}
+              Закінчується в {formatTimeRemaining(storyExpiresAt)}
             </span>
           )}
         </div>
@@ -222,12 +211,13 @@ export default function StoryViewModal({
               onClick={handleShare}
             >
               <Share2 className="h-5 w-5 mr-1" />
-              <span className="font-medium">Share</span>
+              <span className="font-medium">Поділитися</span>
             </Button>
           </div>
 
           <span className="text-xs text-muted-all">
-            Posted {formatDistanceToNow(storyCreatedAt, { addSuffix: true })}
+            Опубліковано{" "}
+            {formatDistanceToNow(storyCreatedAt, { addSuffix: true })}
           </span>
         </div>
       </DialogContent>

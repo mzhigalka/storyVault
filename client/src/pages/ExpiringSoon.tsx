@@ -27,7 +27,7 @@ export default function ExpiringSoon() {
       const res = await fetch(`/api/stories/expiring/${selectedTimeframe}`);
       if (!res.ok) {
         throw new Error(
-          `Failed to fetch a story expiring within ${selectedTimeframe}`
+          `Не вдалося отримати історію, що закінчується в межах ${selectedTimeframe}`
         );
       }
       return res.json();
@@ -49,13 +49,13 @@ export default function ExpiringSoon() {
   const getTimeframeDescription = () => {
     switch (selectedTimeframe) {
       case "hour":
-        return "Disappearing within the next hour";
+        return "Зникнення протягом наступної години";
       case "day":
-        return "Disappearing within 24 hours";
+        return "Зникнення протягом 24 годин";
       case "week":
-        return "Disappearing within the next week";
+        return "Зникнення протягом наступного тижня";
       default:
-        return "Disappearing soon";
+        return "Незабаром зникає";
     }
   };
 
@@ -70,10 +70,10 @@ export default function ExpiringSoon() {
           className="flex items-center"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Home
+          Назад до дому
         </Button>
 
-        <h1 className="text-2xl font-bold">Expiring Soon</h1>
+        <h1 className="text-2xl font-bold">Незабаром закінчуються</h1>
 
         <Button
           variant="outline"
@@ -82,7 +82,7 @@ export default function ExpiringSoon() {
           disabled={isLoading}
         >
           <Shuffle className="h-4 w-4 mr-2" />
-          New Random
+          Нова випадкова історія
         </Button>
       </div>
 
@@ -93,9 +93,9 @@ export default function ExpiringSoon() {
         className="mb-6"
       >
         <TabsList className="w-full grid grid-cols-3">
-          <TabsTrigger value="hour">Within Hour</TabsTrigger>
-          <TabsTrigger value="day">Within Day</TabsTrigger>
-          <TabsTrigger value="week">Within Week</TabsTrigger>
+          <TabsTrigger value="hour">Протягом години</TabsTrigger>
+          <TabsTrigger value="day">Протягом дня</TabsTrigger>
+          <TabsTrigger value="week">Протягом тижня</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -103,8 +103,8 @@ export default function ExpiringSoon() {
         <div className="flex items-center">
           <Clock className="h-5 w-5 text-primary mr-2" />
           <p className="text-sm text-primary font-medium">
-            {getTimeframeDescription()} - catch these stories before they're
-            gone!
+            {getTimeframeDescription()} - зловити ці історії до того, як вони
+            Залишай!
           </p>
         </div>
       </div>
@@ -130,7 +130,7 @@ export default function ExpiringSoon() {
         ) : isError ? (
           <div className="text-center py-12 w-full max-w-3xl">
             <div className="bg-white rounded-lg shadow-sm p-8 border border-light">
-              <h2 className="text-xl font-bold mb-4">No Stories Found</h2>
+              <h2 className="text-xl font-bold mb-4">Не знайдено історій</h2>
               <p className="text-muted-all mb-6">
                 {(error as Error).message ||
                   `No stories expiring within the ${selectedTimeframe} timeframe were found.`}
@@ -141,7 +141,7 @@ export default function ExpiringSoon() {
                   className="flex items-center justify-center"
                 >
                   <Shuffle className="h-4 w-4 mr-2" />
-                  Try Another Timeframe
+                  Спробуйте іншу часову рамку
                 </Button>
                 <Button
                   variant="outline"
@@ -149,7 +149,7 @@ export default function ExpiringSoon() {
                   className="flex items-center justify-center"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+                  Назад до дому
                 </Button>
               </div>
             </div>
@@ -157,9 +157,11 @@ export default function ExpiringSoon() {
         ) : !story ? (
           <div className="text-center py-12 w-full max-w-3xl">
             <div className="bg-white rounded-lg shadow-sm p-8 border border-light">
-              <h2 className="text-xl font-bold mb-4">No Expiring Stories</h2>
+              <h2 className="text-xl font-bold mb-4">
+                Немає термінових історій
+              </h2>
               <p className="text-muted-all mb-6">
-                There are no stories expiring within the selected timeframe.
+                У вибраних часових рамках немає історій.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
@@ -168,10 +170,10 @@ export default function ExpiringSoon() {
                     document.getElementById("create-story-button")?.click()
                   }
                 >
-                  Create a Story
+                  Створіть історію
                 </Button>
                 <Button variant="outline" onClick={() => navigate("/")}>
-                  Back to Home
+                  Назад до дому
                 </Button>
               </div>
             </div>
@@ -185,14 +187,14 @@ export default function ExpiringSoon() {
 
             <div className="mt-8 text-center">
               <p className="text-muted-all mb-6">
-                Want to see another expiring story?
+                Хочете побачити ще одну історію, що закінчується?
               </p>
               <Button
                 onClick={handleRefresh}
                 className="flex items-center justify-center"
               >
                 <Shuffle className="h-4 w-4 mr-2" />
-                Show Me Another
+                Покажи мені іншу
               </Button>
             </div>
           </div>

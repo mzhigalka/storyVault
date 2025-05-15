@@ -12,18 +12,17 @@ export default function Footer() {
                 <BookMarked className="h-5 w-5" />
               </div>
               <span className="ml-2 text-xl font-bold text-dark">
-                StoryVault
+                ShitHappens
               </span>
             </div>
             <p className="mt-2 text-sm text-muted-all">
-              Share your short stories with the world and let your creativity
-              shine.
+              Поділіться своїми короткими історіями зі світом.
             </p>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold text-dark tracking-wider uppercase">
-              Navigation
+              Навігація
             </h3>
             <ul className="mt-4 space-y-2">
               <li>
@@ -31,7 +30,7 @@ export default function Footer() {
                   href="/"
                   className="text-sm text-muted-all hover:text-primary"
                 >
-                  Home
+                  Головна сторінка
                 </Link>
               </li>
               <li>
@@ -39,7 +38,7 @@ export default function Footer() {
                   href="/random"
                   className="text-sm text-muted-all hover:text-primary"
                 >
-                  Random Story
+                  Випадкова історія
                 </Link>
               </li>
               <li>
@@ -47,7 +46,7 @@ export default function Footer() {
                   href="/expiring"
                   className="text-sm text-muted-all hover:text-primary"
                 >
-                  Expiring Soon
+                  Незабаром закінчуються
                 </Link>
               </li>
               <li>
@@ -55,7 +54,7 @@ export default function Footer() {
                   href="/my-stories"
                   className="text-sm text-muted-all hover:text-primary"
                 >
-                  My Stories
+                  Мої історії
                 </Link>
               </li>
               <li>
@@ -63,7 +62,7 @@ export default function Footer() {
                   href="/stats"
                   className="text-sm text-muted-all hover:text-primary"
                 >
-                  Statistics
+                  Статистика
                 </Link>
               </li>
             </ul>
@@ -72,7 +71,7 @@ export default function Footer() {
 
         <div className="mt-8 border-t border-light pt-8 flex flex-col md:flex-row justify-between">
           <p className="text-sm text-muted-all mx-auto">
-            &copy; {new Date().getFullYear()} StoryVault. All rights reserved.
+            &copy; {new Date().getFullYear()} ShitHappens. Усі права захищені.
           </p>
         </div>
       </div>

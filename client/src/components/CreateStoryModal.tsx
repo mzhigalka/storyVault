@@ -40,14 +40,14 @@ interface CreateStoryModalProps {
 const createStorySchema = z.object({
   title: z
     .string()
-    .min(3, "Title must be at least 3 characters")
-    .max(100, "Title must be less than 100 characters"),
+    .min(3, "Назва повинна бути не менше 3 символів")
+    .max(100, "Назва повинна бути менше 100 символів"),
   content: z
     .string()
-    .min(20, "Content must be at least 20 characters")
-    .max(5000, "Content must be less than 5000 characters"),
+    .min(20, "Вміст повинен бути щонайменше 20 символів")
+    .max(5000, "Вміст повинен бути менше 5000 символів"),
   lifetime: z.enum(["1h", "3h", "6h", "12h", "1d", "3d", "1w", "2w", "1m"], {
-    required_error: "Please select a story lifetime",
+    required_error: "Будь ласка, виберіть термін експлуатації історії",
   }),
 });
 
@@ -85,8 +85,8 @@ export default function CreateStoryModal({
       queryClient.invalidateQueries({ queryKey: ["/api/stories/author"] });
 
       toast({
-        title: "Story Created!",
-        description: "Your story has been successfully created.",
+        title: "Історія створена!",
+        description: "Ваша історія успішно створена.",
       });
 
       // Generate shareable link with the access token
@@ -100,7 +100,8 @@ export default function CreateStoryModal({
       toast({
         title: "Error",
         description:
-          error.message || "Failed to create story. Please try again.",
+          error.message ||
+          "Не вдалося створити історію.Будь ласка, спробуйте ще раз.",
         variant: "destructive",
       });
     },
@@ -123,14 +124,15 @@ export default function CreateStoryModal({
       .writeText(shareableLink)
       .then(() => {
         toast({
-          title: "Link Copied!",
-          description: "Story link copied to clipboard.",
+          title: "Посилання скопійовано!",
+          description: "Посилання на історію скопіюється на буфер обміну.",
         });
       })
       .catch(() => {
         toast({
-          title: "Error",
-          description: "Could not copy the link. Please try again.",
+          title: "Помилка",
+          description:
+            "Не міг скопіювати посилання.Будь ласка, спробуйте ще раз.",
           variant: "destructive",
         });
       });
@@ -140,21 +142,19 @@ export default function CreateStoryModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create a New Story</DialogTitle>
+          <DialogTitle>Створіть нову історію</DialogTitle>
           <DialogDescription>
-            Share your creativity with the world. Set a lifetime for how long
-            your story will be available.
+            Поділіться своєю творчістю зі світом.
           </DialogDescription>
         </DialogHeader>
 
         {shareableLink ? (
           <div className="py-4">
-            <h3 className="font-medium text-lg mb-2">
-              Your story has been created!
-            </h3>
+            <h3 className="font-medium text-lg mb-2">Ваша історія створена!</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Here's your unique shareable link. You can share this with anyone,
-              and they'll be able to view your story even after it expires.
+              Ось ваше унікальне посилання для обміну.Ви можете поділитися цим з
+              будь -ким, І вони зможуть переглянути вашу історію навіть після її
+              закінчення.
             </p>
             <div className="flex items-center gap-2">
               <Input
@@ -164,11 +164,11 @@ export default function CreateStoryModal({
                 onClick={(e) => (e.target as HTMLInputElement).select()}
               />
               <Button variant="outline" onClick={copyToClipboard}>
-                Copy
+                Копіювати
               </Button>
             </div>
             <div className="mt-4 flex justify-end">
-              <Button onClick={handleClose}>Close</Button>
+              <Button onClick={handleClose}>Закривати</Button>
             </div>
           </div>
         ) : (
@@ -179,10 +179,10 @@ export default function CreateStoryModal({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>Заголовок</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Give your story a captivating title"
+                        placeholder="Дайте своїй історії захоплюючу назву"
                         {...field}
                       />
                     </FormControl>
@@ -196,10 +196,10 @@ export default function CreateStoryModal({
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Content</FormLabel>
+                    <FormLabel>Зміст</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Type your story here (max 5000 characters)"
+                        placeholder="Введіть свою історію тут (максимум 5000 символів)"
                         className="min-h-[200px]"
                         {...field}
                       />
@@ -214,31 +214,31 @@ export default function CreateStoryModal({
                 name="lifetime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Story Lifetime</FormLabel>
+                    <FormLabel>Термін дії історії</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select how long your story will be available" />
+                          <SelectValue placeholder="Виберіть, як довго буде доступна ваша історія" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="1h">1 hour</SelectItem>
-                        <SelectItem value="3h">3 hours</SelectItem>
-                        <SelectItem value="6h">6 hours</SelectItem>
-                        <SelectItem value="12h">12 hours</SelectItem>
-                        <SelectItem value="1d">1 day</SelectItem>
-                        <SelectItem value="3d">3 days</SelectItem>
-                        <SelectItem value="1w">1 week</SelectItem>
-                        <SelectItem value="2w">2 weeks</SelectItem>
-                        <SelectItem value="1m">1 month</SelectItem>
+                        <SelectItem value="1h">1 година</SelectItem>
+                        <SelectItem value="3h">3 годинник</SelectItem>
+                        <SelectItem value="6h">6 годинник</SelectItem>
+                        <SelectItem value="12h">12 годинник</SelectItem>
+                        <SelectItem value="1d">1 день</SelectItem>
+                        <SelectItem value="3d">3 дні</SelectItem>
+                        <SelectItem value="1w">1 тиждень</SelectItem>
+                        <SelectItem value="2w">2 тижня</SelectItem>
+                        <SelectItem value="1m">1 місяць</SelectItem>
                       </SelectContent>
                     </Select>
                     <p className="text-sm text-muted-foreground mt-1">
-                      After this period, your story will no longer be publicly
-                      available but will remain in your personal archive.
+                      Після цього періоду ваша історія більше не буде публічно
+                      доступний, але залишиться в особистому архіві.
                     </p>
                     <FormMessage />
                   </FormItem>
@@ -247,10 +247,10 @@ export default function CreateStoryModal({
 
               <div className="flex justify-end space-x-3 pt-4">
                 <Button variant="outline" type="button" onClick={handleClose}>
-                  Cancel
+                  Скасувати
                 </Button>
                 <Button type="submit" disabled={isPending}>
-                  {isPending ? "Creating..." : "Create Story"}
+                  {isPending ? "Створення..." : "Створити історію"}
                 </Button>
               </div>
             </form>

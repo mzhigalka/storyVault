@@ -46,7 +46,7 @@ export default function Navbar({
                 </svg>
               </div>
               <span className="ml-2 text-xl font-bold text-dark">
-                StoryVault
+                ShitHappens
               </span>
             </Link>
             <nav className="hidden md:ml-6 md:flex space-x-4">
@@ -58,7 +58,7 @@ export default function Navbar({
                     : "text-dark-light hover:bg-light hover:text-dark"
                 }`}
               >
-                Home
+                Головна сторінка
               </Link>
               <Link
                 href="/random"
@@ -68,7 +68,7 @@ export default function Navbar({
                     : "text-dark-light hover:bg-light hover:text-dark"
                 }`}
               >
-                Random
+                Випадкова історія
               </Link>
               <Link
                 href="/expiring"
@@ -78,7 +78,7 @@ export default function Navbar({
                     : "text-dark-light hover:bg-light hover:text-dark"
                 }`}
               >
-                Expiring Soon
+                Незабаром закінчуються
               </Link>
               <Link
                 href="/stats"
@@ -88,7 +88,7 @@ export default function Navbar({
                     : "text-dark-light hover:bg-light hover:text-dark"
                 }`}
               >
-                Statistics
+                Статистика
               </Link>
             </nav>
           </div>
@@ -105,7 +105,7 @@ export default function Navbar({
                         <Avatar className="h-8 w-8">
                           <AvatarImage
                             src={user?.avatar || ""}
-                            alt={user?.username || "User"}
+                            alt={user?.username || "Користувач"}
                           />
                           <AvatarFallback>
                             {user?.username?.charAt(0).toUpperCase() || "U"}
@@ -115,14 +115,14 @@ export default function Navbar({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
-                        <Link href="/my-stories">My Stories</Link>
+                        <Link href="/my-stories">Мої історії</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={onCreateStoryClick}>
-                        Create Story
+                        Створити історію
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={logout}>
-                        Sign out
+                        Вийти
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -135,13 +135,13 @@ export default function Navbar({
                   onClick={onLoginClick}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-light"
                 >
-                  Log in
+                  Увійти
                 </Button>
                 <Button
                   onClick={onLoginClick}
                   className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90"
                 >
-                  Sign up
+                  Зареєструватися
                 </Button>
               </div>
             )}
@@ -152,7 +152,7 @@ export default function Navbar({
               className="md:hidden ml-2 bg-white p-2 rounded-md text-dark-light hover:text-dark hover:bg-light focus:outline-none focus:ring-2 focus:ring-primary"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              <span className="sr-only">Open main menu</span>
+              <span className="sr-only">Відкрийте головне меню</span>
               <Menu className="h-6 w-6" />
             </button>
           </div>
@@ -171,7 +171,7 @@ export default function Navbar({
             }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Home
+            Головна сторінка
           </Link>
           <Link
             href="/random"
@@ -182,7 +182,7 @@ export default function Navbar({
             }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Random
+            Випадкова історія
           </Link>
           <Link
             href="/expiring"
@@ -193,7 +193,7 @@ export default function Navbar({
             }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Expiring Soon
+            Незабаром закінчується
           </Link>
           <Link
             href="/stats"
@@ -204,7 +204,7 @@ export default function Navbar({
             }`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Statistics
+            Статистика
           </Link>
 
           {isAuthenticated && (
@@ -214,7 +214,7 @@ export default function Navbar({
                 className="block px-3 py-2 rounded-md text-base font-medium text-dark-light hover:bg-light hover:text-dark"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                My Stories
+                Мої історії
               </Link>
               <button
                 onClick={() => {
@@ -223,7 +223,7 @@ export default function Navbar({
                 }}
                 className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-dark-light hover:bg-light hover:text-dark"
               >
-                Create Story
+                Створити історію
               </button>
               <button
                 onClick={() => {
@@ -232,7 +232,7 @@ export default function Navbar({
                 }}
                 className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-dark-light hover:bg-light hover:text-dark"
               >
-                Sign out
+                Вийти
               </button>
             </>
           )}

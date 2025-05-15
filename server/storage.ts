@@ -400,39 +400,67 @@ export class MongoDBStorage implements IStorage {
     console.log("Voting - User ID:", userId);
 
     try {
-      // Check if story exists
+      // Проверяем, является ли storyId и userId валидными ObjectId
+      let storyObjectId;
+      let userObjectId;
+
+      try {
+        storyObjectId = new ObjectId(storyId);
+        userObjectId = new ObjectId(userId);
+      } catch (error) {
+        console.error("Invalid ObjectId format:", error);
+        throw new Error("Некорректный формат ID для истории или пользователя");
+      }
+
+      // Проверяем, существует ли история
       const story = await this.getStory(storyId);
       if (!story) {
-        throw new Error("Story not found");
+        throw new Error("История не найдена");
       }
 
-      // Check if user has already voted
-      const hasVoted = await this.hasVoted(storyId, userId);
-      if (hasVoted) {
-        throw new Error("User has already voted for this story");
+      // Проверяем, голосовал ли пользователь уже
+      const existingVote = await collections.votes.findOne({
+        storyId: storyObjectId,
+        userId: userObjectId,
+      });
+
+      if (existingVote) {
+        // Если голос уже существует, удаляем его (отменяем голос)
+        console.log("Удаляем существующий голос");
+        await collections.votes.deleteOne({ _id: existingVote._id });
+
+        // Уменьшаем счетчик голосов
+        console.log("Уменьшаем счетчик голосов");
+        await collections.stories.updateOne(
+          { _id: storyObjectId },
+          { $inc: { votes: -1 } }
+        );
+
+        console.log("Голос успешно отменен");
+        return;
       }
 
-      // Create a new vote
+      // Создаем новый голос
       const now = new Date();
       const voteDoc = {
-        userId: new ObjectId(userId),
-        storyId: new ObjectId(storyId),
+        userId: userObjectId,
+        storyId: storyObjectId,
         createdAt: now,
       };
 
-      console.log("Inserting vote:", voteDoc);
+      console.log("Добавляем новый голос:", voteDoc);
       await collections.votes.insertOne(voteDoc);
 
-      // Increment story votes
-      console.log("Incrementing story votes count");
+      // Увеличиваем счетчик голосов
+      console.log("Увеличиваем счетчик голосов");
       await collections.stories.updateOne(
-        { _id: new ObjectId(storyId) },
+        { _id: storyObjectId },
         { $inc: { votes: 1 } }
       );
 
-      console.log("Vote successfully created");
+      console.log("Голос успешно добавлен");
     } catch (error) {
-      console.error("Error in voteStory method:", error);
+      console.error("Ошибка при голосовании:", error);
       throw error;
     }
   }

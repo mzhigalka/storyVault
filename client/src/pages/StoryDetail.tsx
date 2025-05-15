@@ -40,11 +40,11 @@ export default function StoryDetail() {
       const res = await fetch(apiPath);
       if (!res.ok) {
         if (res.status === 404) {
-          throw new Error("Story not found");
+          throw new Error("Історія не знайдена");
         } else if (res.status === 410) {
-          throw new Error("This story has expired");
+          throw new Error("Термін дії цієї історії закінчився");
         } else {
-          throw new Error("Failed to load story");
+          throw new Error("Не вдалося завантажити історію");
         }
       }
       return res.json();
@@ -52,18 +52,14 @@ export default function StoryDetail() {
   });
 
   useEffect(() => {
-    // Check if user has already voted for this story
     if (story && isAuthenticated) {
-      // In a real app, we would make an API call to check
-      // For now we'll simulate this with local state
       const checkVote = async () => {
         try {
-          // This is a placeholder for a real API call
           const voted =
             localStorage.getItem(`voted-${story.id}-${user?.id}`) === "true";
           setHasVoted(voted);
         } catch (error) {
-          console.error("Failed to check vote status", error);
+          console.error("Не вдалося перевірити статус голосування", error);
         }
       };
 
@@ -81,19 +77,19 @@ export default function StoryDetail() {
       queryClient.invalidateQueries({ queryKey: ["/api/stories", story?.id] });
       setHasVoted(true);
 
-      // In a real app, this would be handled server-side
       localStorage.setItem(`voted-${story.id}-${user?.id}`, "true");
 
       toast({
-        title: "Vote Recorded",
-        description: "Thank you for voting!",
+        title: "Голосування зафіксовано",
+        description: "Дякую за голосування!",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
         description:
-          error.message || "Could not vote for this story. Please try again.",
+          error.message ||
+          "Не міг проголосувати за цю історію. Будь ласка, спробуйте ще раз.",
         variant: "destructive",
       });
     },
@@ -102,8 +98,8 @@ export default function StoryDetail() {
   const handleVote = () => {
     if (!isAuthenticated) {
       toast({
-        title: "Authentication Required",
-        description: "Please log in to vote for stories.",
+        title: "Потрібна автентифікація",
+        description: "Будь ласка, увійдіть, щоб проголосувати за історії.",
         variant: "default",
       });
       return;
@@ -111,8 +107,8 @@ export default function StoryDetail() {
 
     if (hasVoted) {
       toast({
-        title: "Already Voted",
-        description: "You have already voted for this story.",
+        title: "Вже проголосував",
+        description: "Ви вже проголосували за цю історію.",
         variant: "default",
       });
       return;
@@ -120,8 +116,8 @@ export default function StoryDetail() {
 
     if (story && isPast(new Date(story.expiresAt))) {
       toast({
-        title: "Story Expired",
-        description: "You cannot vote for expired stories.",
+        title: "Термін дії історії закінчився",
+        description: "Ви не можете проголосувати за історії, що закінчилися.",
         variant: "default",
       });
       return;
@@ -135,23 +131,19 @@ export default function StoryDetail() {
   const handleShare = () => {
     if (!story) return;
 
-    // Create a shareable link with the story access token
     const shareUrl = `${window.location.origin}/s/${story.accessToken}`;
 
-    // Use the Web Share API if available
     if (navigator.share) {
       navigator
         .share({
           title: story.title,
-          text: "Check out this story on StoryVault",
+          text: "Перевірте цю історію далі наShitHappens",
           url: shareUrl,
         })
         .catch(() => {
-          // Fallback to clipboard
           copyToClipboard(shareUrl);
         });
     } else {
-      // Fallback to clipboard
       copyToClipboard(shareUrl);
     }
   };
@@ -161,14 +153,15 @@ export default function StoryDetail() {
       .writeText(text)
       .then(() => {
         toast({
-          title: "Link Copied!",
-          description: "Story link copied to clipboard.",
+          title: "Посилання скопійовано!",
+          description: "Посилання на історію скопіюється на буфер обміну.",
         });
       })
       .catch(() => {
         toast({
-          title: "Error",
-          description: "Could not copy the link. Please try again.",
+          title: "Помилка",
+          description:
+            "Не міг скопіювати посилання.Будь ласка, спробуйте ще раз.",
           variant: "destructive",
         });
       });
@@ -211,11 +204,11 @@ export default function StoryDetail() {
   if (isError) {
     return (
       <div className="max-w-3xl mx-auto text-center py-12">
-        <h1 className="text-2xl font-bold mb-4">Oops!</h1>
-        <p className="text-muted mb-6">
+        <h1 className="text-2xl font-bold mb-4">На жаль!</h1>
+        <p className="text-muted-all mb-6">
           {(error as Error).message || "Something went wrong"}
         </p>
-        <Button onClick={() => navigate("/")}>Back to Home</Button>
+        <Button onClick={() => navigate("/")}>Назад до дому</Button>
       </div>
     );
   }
@@ -223,11 +216,11 @@ export default function StoryDetail() {
   if (!story) {
     return (
       <div className="max-w-3xl mx-auto text-center py-12">
-        <h1 className="text-2xl font-bold mb-4">Story Not Found</h1>
-        <p className="text-muted mb-6">
-          The story you're looking for doesn't exist or has been removed.
+        <h1 className="text-2xl font-bold mb-4">Історія не знайдена</h1>
+        <p className="text-muted-all mb-6">
+          Історія, яку ви шукаєте, не існує або не була видалена.
         </p>
-        <Button onClick={() => navigate("/")}>Back to Home</Button>
+        <Button onClick={() => navigate("/")}>Назад до дому</Button>
       </div>
     );
   }
@@ -267,10 +260,10 @@ export default function StoryDetail() {
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                Expires in {formatTimeRemaining(storyExpiresAt)}
+                Закінчується в {formatTimeRemaining(storyExpiresAt)}
               </span>
             ) : (
-              <span className="countdown-timer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted/10 text-muted">
+              <span className="countdown-timer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted/10 text-muted-all">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-3.5 w-3.5 mr-1"
@@ -284,7 +277,7 @@ export default function StoryDetail() {
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                Expired
+                Закінчився
               </span>
             )}
           </div>
@@ -293,7 +286,7 @@ export default function StoryDetail() {
             <Avatar className="h-10 w-10">
               <AvatarImage
                 src={story.authorAvatar || ""}
-                alt={story.authorName || "Author"}
+                alt={story.authorName || "Автор"}
               />
               <AvatarFallback>
                 {story.authorName?.charAt(0).toUpperCase() || "A"}
@@ -301,10 +294,10 @@ export default function StoryDetail() {
             </Avatar>
             <div className="ml-3">
               <p className="text-sm font-medium">
-                {story.authorName || "Anonymous"}
+                {story.authorName || "Анонімний"}
               </p>
               <p className="text-xs text-muted-foreground">
-                Posted{" "}
+                Опубліковано{" "}
                 {formatDistanceToNow(storyCreatedAt, { addSuffix: true })}
               </p>
             </div>
@@ -325,7 +318,9 @@ export default function StoryDetail() {
                 variant="ghost"
                 size="sm"
                 className={`inline-flex items-center ${
-                  hasVoted ? "text-primary" : "text-muted hover:text-primary"
+                  hasVoted
+                    ? "text-primary"
+                    : "text-muted-all hover:text-primary"
                 }`}
                 onClick={handleVote}
                 disabled={isVoting || hasVoted || isExpired}
@@ -337,16 +332,16 @@ export default function StoryDetail() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="inline-flex items-center text-muted hover:text-primary"
+                className="inline-flex items-center text-muted-all hover:text-primary"
                 onClick={handleShare}
               >
                 <Share2 className="h-5 w-5 mr-1" />
-                <span className="font-medium">Share</span>
+                <span className="font-medium">Поділитися</span>
               </Button>
             </div>
 
             <Button variant="outline" onClick={() => navigate("/")}>
-              Back to Home
+              Назад до дому
             </Button>
           </div>
         </CardContent>

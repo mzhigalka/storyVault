@@ -12,7 +12,7 @@ export default function StatsBar() {
     <section className="mb-8 bg-white rounded-lg shadow-sm p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="text-center p-3">
-          <p className="text-muted-all text-sm">Total Stories</p>
+          <p className="text-muted-all text-sm">Всього</p>
           {isLoading ? (
             <Skeleton className="h-8 w-24 mx-auto mt-1" />
           ) : (
@@ -21,7 +21,7 @@ export default function StatsBar() {
         </div>
 
         <div className="text-center p-3">
-          <p className="text-muted-all text-sm">Available Stories</p>
+          <p className="text-muted-all text-sm">Доступні історії</p>
           {isLoading ? (
             <Skeleton className="h-8 w-24 mx-auto mt-1" />
           ) : (
@@ -32,7 +32,7 @@ export default function StatsBar() {
         </div>
 
         <div className="text-center p-3">
-          <p className="text-muted-all text-sm">Expiring Today</p>
+          <p className="text-muted-all text-sm">Закінчується сьогодні</p>
           {isLoading ? (
             <Skeleton className="h-8 w-24 mx-auto mt-1" />
           ) : (

@@ -43,7 +43,6 @@ export default function Home() {
   const totalStories = data?.total || 0;
   const totalPages = Math.ceil(totalStories / itemsPerPage);
 
-  // Sort stories by expiry date if sortBy is "expiring"
   const sortedStories =
     sortBy === "expiring"
       ? [...stories].sort(
@@ -86,11 +85,11 @@ export default function Home() {
       <section className="mb-8 bg-gradient-to-r from-primary/90 to-primary rounded-lg shadow-lg overflow-hidden">
         <div className="px-6 py-12 md:py-20 max-w-3xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Share Your Stories with the World
+            Поділіться своїми історіями зі світом
           </h1>
           <p className="text-white/90 mb-8 text-lg">
-            Create time-limited stories, share them with your friends, and let
-            the world vote on your creativity.
+            Створіть обмежені часом історії, діліться ними зі своїми друзями та
+            нехай Світ голосує за вашу творчість.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
@@ -98,7 +97,7 @@ export default function Home() {
               className="bg-white text-primary hover:bg-gray-100"
               onClick={handleCreateStory}
             >
-              Create a Story
+              Створіть історію
             </Button>
           </div>
         </div>
@@ -111,7 +110,7 @@ export default function Home() {
       />
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
           {Array(6)
             .fill(0)
             .map((_, i) => (
@@ -139,19 +138,19 @@ export default function Home() {
       ) : isError ? (
         <div className="text-center py-12">
           <p className="text-lg text-muted">
-            Failed to load stories. Please try again later.
+            Не вдалося завантажити історії.Будь ласка, спробуйте пізніше.
           </p>
           <Button
             variant="outline"
             className="mt-4"
             onClick={() => window.location.reload()}
           >
-            Retry
+            Повторити
           </Button>
         </div>
       ) : sortedStories.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-lg text-muted">No stories found.</p>
+          <p className="text-lg text-muted">Не знайдено історій.</p>
           <Button
             variant="outline"
             className="mt-4"
@@ -159,12 +158,12 @@ export default function Home() {
               document.getElementById("create-story-button")?.click()
             }
           >
-            Create the first story
+            Створіть першу історію
           </Button>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
             {sortedStories.map((story: any) => (
               <StoryCard
                 key={story.id}

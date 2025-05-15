@@ -21,7 +21,7 @@ export default function SortControls({
 }: SortControlsProps) {
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-      <h2 className="text-2xl font-bold text-dark">Browse Stories</h2>
+      <h2 className="text-2xl font-bold text-dark">Перегляньте історії</h2>
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative">
           <Select value={sortBy} onValueChange={onSortChange}>
@@ -29,9 +29,9 @@ export default function SortControls({
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="latest">Latest First</SelectItem>
-              <SelectItem value="popular">Most Popular</SelectItem>
-              <SelectItem value="expiring">Expiring Soon</SelectItem>
+              <SelectItem value="latest">Спочатку нові</SelectItem>
+              <SelectItem value="popular">Найпопулярніший</SelectItem>
+              <SelectItem value="expiring">Незабаром закінчуються</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -42,7 +42,7 @@ export default function SortControls({
           onClick={onRandomClick}
         >
           <Shuffle className="h-4 w-4 mr-2" />
-          Random Story
+          Випадкова історія
         </Button>
       </div>
     </div>

@@ -30,12 +30,14 @@ export default function AuthorDashboard() {
   if (!isAuthenticated) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <h1 className="text-2xl font-bold mb-4">Author Dashboard</h1>
-        <p className="text-muted mb-6">Please log in to view your stories.</p>
+        <h1 className="text-2xl font-bold mb-4">Інформаційна панель автора</h1>
+        <p className="text-muted mb-6">
+          Будь ласка, увійдіть, щоб переглянути свої історії.
+        </p>
         <Button
           onClick={() => document.getElementById("login-button")?.click()}
         >
-          Log In
+          Увійти
         </Button>
       </div>
     );
@@ -45,8 +47,8 @@ export default function AuthorDashboard() {
     const link = `${window.location.origin}/s/${accessToken}`;
     navigator.clipboard.writeText(link).then(() => {
       toast({
-        title: "Link Copied!",
-        description: "Story link copied to clipboard.",
+        title: "Посилання скопійовано!",
+        description: "Посилання на історію скопіюється на буфер обміну ",
       });
     });
   };
@@ -62,17 +64,17 @@ export default function AuthorDashboard() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">My Stories</h1>
         <p className="text-muted">
-          Manage your stories and view their statistics.
+          Керуйте своїми історіями та перегляньте їх статистику.
         </p>
       </div>
 
       <Tabs defaultValue="active" className="w-full mb-6">
         <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="active">
-            Active Stories ({activeStories.length})
+            Активні історії ({activeStories.length})
           </TabsTrigger>
           <TabsTrigger value="expired">
-            Expired Stories ({expiredStories.length})
+            Історії, що закінчилися ({expiredStories.length})
           </TabsTrigger>
         </TabsList>
 
@@ -100,16 +102,18 @@ export default function AuthorDashboard() {
           ) : activeStories.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
               <Clock className="mx-auto h-12 w-12 text-muted mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Active Stories</h3>
+              <h3 className="text-lg font-medium mb-2">
+                Немає активних історій
+              </h3>
               <p className="text-muted mb-4">
-                You don't have any active stories at the moment.
+                На даний момент у вас немає активних історій.
               </p>
               <Button
                 onClick={() =>
                   document.getElementById("create-story-button")?.click()
                 }
               >
-                Create a Story
+                Створіть історію
               </Button>
             </div>
           ) : (
@@ -120,7 +124,7 @@ export default function AuthorDashboard() {
                     <div>
                       <CardTitle>{story.title}</CardTitle>
                       <CardDescription>
-                        Created{" "}
+                        Створений{" "}
                         {formatDistanceToNow(new Date(story.createdAt), {
                           addSuffix: true,
                         })}
@@ -140,7 +144,7 @@ export default function AuthorDashboard() {
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                       </svg>
-                      Expires in{" "}
+                      Закінчується в{" "}
                       {formatTimeRemaining(new Date(story.expiresAt))}
                     </span>
                   </div>
@@ -154,7 +158,7 @@ export default function AuthorDashboard() {
                   <div className="flex flex-wrap justify-between gap-2">
                     <div className="flex items-center gap-4">
                       <span className="text-sm font-medium">
-                        Votes: {story.votes}
+                        Голоси: {story.votes}
                       </span>
                     </div>
                     <div className="flex gap-2">
@@ -163,14 +167,14 @@ export default function AuthorDashboard() {
                         size="sm"
                         onClick={() => setSelectedStory(story)}
                       >
-                        <Eye className="h-4 w-4 mr-1" /> View
+                        <Eye className="h-4 w-4 mr-1" /> Переглянути
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => copyShareLink(story.accessToken)}
                       >
-                        <Copy className="h-4 w-4 mr-1" /> Copy Link
+                        <Copy className="h-4 w-4 mr-1" /> Копіювати посилання
                       </Button>
                       <Button
                         variant="outline"
@@ -179,7 +183,7 @@ export default function AuthorDashboard() {
                           if (navigator.share) {
                             navigator.share({
                               title: story.title,
-                              text: "Check out my story on StoryVault",
+                              text: "Перевірте мою історію далі на ShitHappens",
                               url: `${window.location.origin}/s/${story.accessToken}`,
                             });
                           } else {
@@ -187,7 +191,7 @@ export default function AuthorDashboard() {
                           }
                         }}
                       >
-                        <Share2 className="h-4 w-4 mr-1" /> Share
+                        <Share2 className="h-4 w-4 mr-1" /> Поділитися
                       </Button>
                     </div>
                   </div>
@@ -220,10 +224,12 @@ export default function AuthorDashboard() {
               ))
           ) : expiredStories.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-              <Clock className="mx-auto h-12 w-12 text-muted mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Expired Stories</h3>
-              <p className="text-muted mb-4">
-                You don't have any expired stories yet.
+              <Clock className="mx-auto h-12 w-12 text-muted-all mb-4" />
+              <h3 className="text-lg font-medium mb-2">
+                Немає історій, що закінчилися
+              </h3>
+              <p className="text-muted-all mb-4">
+                У вас ще немає історій, що закінчилися.
               </p>
             </div>
           ) : (
@@ -234,7 +240,7 @@ export default function AuthorDashboard() {
                     <div>
                       <CardTitle>{story.title}</CardTitle>
                       <CardDescription>
-                        Created{" "}
+                        Створений{" "}
                         {formatDistanceToNow(new Date(story.createdAt), {
                           addSuffix: true,
                         })}
@@ -254,7 +260,7 @@ export default function AuthorDashboard() {
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                       </svg>
-                      Expired{" "}
+                      Закінчився{" "}
                       {formatDistanceToNow(new Date(story.expiresAt), {
                         addSuffix: true,
                       })}
@@ -270,7 +276,7 @@ export default function AuthorDashboard() {
                   <div className="flex flex-wrap justify-between gap-2">
                     <div className="flex items-center gap-4">
                       <span className="text-sm font-medium">
-                        Final Votes: {story.votes}
+                        Остаточні голоси: {story.votes}
                       </span>
                     </div>
                     <div className="flex gap-2">
@@ -279,14 +285,15 @@ export default function AuthorDashboard() {
                         size="sm"
                         onClick={() => setSelectedStory(story)}
                       >
-                        <Eye className="h-4 w-4 mr-1" /> View
+                        <Eye className="h-4 w-4 mr-1" /> Переглянути
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => copyShareLink(story.accessToken)}
                       >
-                        <Copy className="h-4 w-4 mr-1" /> Copy Archive Link
+                        <Copy className="h-4 w-4 mr-1" /> Скопіюйте посилання
+                        архіву
                       </Button>
                     </div>
                   </div>

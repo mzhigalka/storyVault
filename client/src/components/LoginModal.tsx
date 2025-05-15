@@ -3,8 +3,21 @@ import { useAuth } from "@/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,28 +30,41 @@ interface LoginModalProps {
 }
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  email: z.string().email({ message: "Введіть дійсну електронну адресу" }),
+  password: z
+    .string()
+    .min(6, { message: "Пароль повинен бути щонайменше 6 символів" }),
   rememberMe: z.boolean().optional(),
 });
 
-const registerSchema = z.object({
-  username: z.string().min(3, { message: "Username must be at least 3 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    username: z.string().min(3, {
+      message: "Ім'я користувача повинно бути щонайменше 3 символів",
+    }),
+    email: z.string().email({ message: "Введіть дійсну електронну адресу" }),
+    password: z
+      .string()
+      .min(6, { message: "Пароль повинен бути щонайменше 6 символів" }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type LoginValues = z.infer<typeof loginSchema>;
 type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
-  const { login, register: registerUser, loginWithGoogle, loginWithFacebook } = useAuth();
-  
+  const {
+    login,
+    register: registerUser,
+    loginWithGoogle,
+    loginWithFacebook,
+  } = useAuth();
+
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -47,7 +73,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       rememberMe: false,
     },
   });
-  
+
   const registerForm = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -57,17 +83,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       confirmPassword: "",
     },
   });
-  
+
   const onLoginSubmit = async (data: LoginValues) => {
     await login(data.email, data.password);
     onClose();
   };
-  
+
   const onRegisterSubmit = async (data: RegisterValues) => {
     await registerUser(data.username, data.email, data.password);
     onClose();
   };
-  
+
   const handleSocialLogin = async (provider: "google" | "facebook") => {
     if (provider === "google") {
       window.location.href = "/api/auth/google";
@@ -75,7 +101,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       window.location.href = "/api/auth/facebook";
     }
   };
-  
+
   const handleTabChange = (value: string) => {
     setActiveTab(value as "login" | "register");
     loginForm.reset();
@@ -87,21 +113,27 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-lg">
-            {activeTab === "login" ? "Sign in to your account" : "Create a new account"}
+            {activeTab === "login"
+              ? "Увійдіть у свій обліковий запис"
+              : "Створіть новий обліковий запис"}
           </DialogTitle>
           <DialogDescription className="text-center">
-            {activeTab === "login" 
-              ? "Or create a new account if you don't have one yet" 
-              : "Or sign in if you already have an account"}
+            {activeTab === "login"
+              ? "Або створити новий обліковий запис, якщо у вас ще немає"
+              : "Або увійдіть, якщо у вас вже є обліковий запис"}
           </DialogDescription>
         </DialogHeader>
-        
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-6">
+
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className="mt-6"
+        >
           <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
+            <TabsTrigger value="login">Логін</TabsTrigger>
+            <TabsTrigger value="register">Реєстрація</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="login" className="space-y-6">
             <div className="space-y-4">
               <Button
@@ -111,7 +143,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 onClick={() => handleSocialLogin("google")}
               >
                 <SiGoogle className="mr-2 text-lg" />
-                Continue with Google
+                Продовжуйте з Google
               </Button>
               <Button
                 type="button"
@@ -120,49 +152,62 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 onClick={() => handleSocialLogin("facebook")}
               >
                 <SiFacebook className="mr-2 text-lg" />
-                Continue with Facebook
+                Продовжуйте Facebook
               </Button>
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-light"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-muted">Or continue with</span>
+                <span className="px-2 bg-white text-muted-all">
+                  Або продовжуйте
+                </span>
               </div>
             </div>
-            
+
             <Form {...loginForm}>
-              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+              <form
+                onSubmit={loginForm.handleSubmit(onLoginSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={loginForm.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email address</FormLabel>
+                      <FormLabel>Електронна адреса</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
+                        <Input
+                          type="email"
+                          placeholder="you@example.com"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={loginForm.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Пароль</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input
+                          placeholder="**********"
+                          type="password"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <div className="flex items-center justify-between">
                   <FormField
                     control={loginForm.control}
@@ -178,24 +223,27 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                           htmlFor="remember-me"
                           className="text-sm text-dark-light"
                         >
-                          Remember me
+                          Запам'ятати мене
                         </label>
                       </div>
                     )}
                   />
-                  
-                  <a href="#forgot-password" className="text-sm font-medium text-primary hover:text-primary/80">
-                    Forgot password?
+
+                  <a
+                    href="#forgot-password"
+                    className="text-sm font-medium text-primary hover:text-primary/80"
+                  >
+                    Забули пароль?
                   </a>
                 </div>
-                
+
                 <Button type="submit" className="w-full">
-                  Sign in
+                  Увійти
                 </Button>
               </form>
             </Form>
           </TabsContent>
-          
+
           <TabsContent value="register" className="space-y-6">
             <div className="space-y-4">
               <Button
@@ -205,7 +253,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 onClick={() => handleSocialLogin("google")}
               >
                 <SiGoogle className="mr-2 text-lg" />
-                Continue with Google
+                Продовжуйте з Google
               </Button>
               <Button
                 type="button"
@@ -214,79 +262,96 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 onClick={() => handleSocialLogin("facebook")}
               >
                 <SiFacebook className="mr-2 text-lg" />
-                Continue with Facebook
+                Продовжуйте Facebook
               </Button>
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-light"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-muted">Or continue with</span>
+                <span className="px-2 bg-white text-muted-all">
+                  Або продовжуйте
+                </span>
               </div>
             </div>
-            
+
             <Form {...registerForm}>
-              <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+              <form
+                onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={registerForm.control}
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Ім'я користувача</FormLabel>
                       <FormControl>
-                        <Input placeholder="johndoe" {...field} />
+                        <Input placeholder="Ivan" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={registerForm.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email address</FormLabel>
+                      <FormLabel>Електронна адреса</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
+                        <Input
+                          type="email"
+                          placeholder="you@example.com"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={registerForm.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Пароль</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="**********"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={registerForm.control}
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel>Підтвердити пароль</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="**********"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <Button type="submit" className="w-full">
-                  Create Account
+                  Створити обліковий запис
                 </Button>
               </form>
             </Form>

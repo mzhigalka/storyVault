@@ -27,30 +27,30 @@ export default function Stats() {
 
   const statsCards = [
     {
-      title: "Total Stories",
+      title: "Всього",
       value: stats?.total || 0,
-      description: "Total number of stories ever created",
+      description: "Загальна кількість історій коли-небудь створена ",
       icon: <BookOpen className="h-8 w-8 text-primary" />,
       color: "bg-primary/10",
     },
     {
-      title: "Available Stories",
+      title: "Доступні історії",
       value: stats?.available || 0,
-      description: "Stories currently accessible",
+      description: "Історії, які зараз доступні",
       icon: <BarChart2 className="h-8 w-8 text-primary" />,
       color: "bg-primary/10",
     },
     {
-      title: "Expiring Today",
+      title: "Закінчується сьогодні",
       value: stats?.expiringToday || 0,
-      description: "Stories that will expire within 24 hours",
+      description: "Історії, які закінчуються протягом 24 годин",
       icon: <Clock className="h-8 w-8 text-primary" />,
       color: "bg-primary/10",
     },
     {
-      title: "Expiring This Hour",
+      title: "Скінчиться протягом години",
       value: stats?.expiringHour || 0,
-      description: "Stories disappearing very soon",
+      description: "Історії, що зникають дуже скоро",
       icon: <TrendingUp className="h-8 w-8 text-primary" />,
       color: "bg-primary/10",
     },
@@ -65,9 +65,9 @@ export default function Stats() {
           className="flex items-center"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Home
+          Назад до дому
         </Button>
-        <h1 className="text-2xl font-bold">Story Statistics</h1>
+        <h1 className="text-2xl font-bold">Статистика історії</h1>
         <div className="w-[100px]"></div> {/* Empty div for centering */}
       </div>
 
@@ -75,14 +75,14 @@ export default function Stats() {
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center">
             <Award className="h-5 w-5 mr-2 text-primary" />
-            Platform Statistics
+            Статистика платформи
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-all">
-            Explore the current state of StoryVault. See how many stories are
-            available, which ones are expiring soon, and the overall platform
-            activity.
+            Дослідіть поточний стан ShitHappens. Подивіться, скільки історій
+            доступні, термін дії яких скоро закінчиться, і загальна платформа
+            діяльність.
           </p>
         </CardContent>
       </Card>
@@ -108,14 +108,14 @@ export default function Stats() {
         ) : isError ? (
           <div className="col-span-1 md:col-span-2 text-center py-12">
             <p className="text-lg text-muted-all">
-              Failed to load statistics. Please try again later.
+              Не вдалося завантажити статистику.Будь ласка, спробуйте пізніше.
             </p>
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => window.location.reload()}
             >
-              Refresh
+              Оновлювати
             </Button>
           </div>
         ) : (
@@ -141,13 +141,13 @@ export default function Stats() {
       </div>
 
       <div className="bg-gradient-to-r from-primary/90 to-primary rounded-lg shadow-lg overflow-hidden p-6 text-center">
-        <h2 className="text-xl font-bold text-white mb-4">Interesting Fact</h2>
+        <h2 className="text-xl font-bold text-white mb-4">Цікавий факт</h2>
         <p className="text-white/90 mb-6">
           {stats?.available && stats?.total
             ? `${Math.round(
                 (stats.available / stats.total) * 100
-              )}% of all stories ever created on StoryVault are still available for reading!`
-            : "Stories on StoryVault have limited lifetimes, making each reading experience unique and time-sensitive!"}
+              )}% з усіх історій, створених на Shithappens, все ще доступні для читання!`
+            : "історії на ShitHappens мають обмежений термін дії, що робить кожне читання унікальним і чутливим до часу!"}
         </p>
         <Button
           variant="outline"
@@ -155,7 +155,7 @@ export default function Stats() {
           onClick={() => navigate("/random")}
         >
           <Shuffle className="h-4 w-4 mr-2" />
-          Discover a Random Story
+          Відкрийте випадкову історію
         </Button>
       </div>
     </>

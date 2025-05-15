@@ -10,7 +10,6 @@ import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
-// Define schema for MongoDB
 const userLoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
@@ -501,8 +500,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/stories/:id/vote", isAuthenticated, async (req, res) => {
     try {
       const storyId = req.params.id;
+      if (!storyId) {
+        return res.status(400).json({ message: "Відсутній ID історії" });
+      }
+
       const user = req.user as any;
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "Користувач не автентифікований" });
+      }
+
+      // Отримуємо ID користувача залежно від його формату у базі даних
       const userId = user._id ? user._id.toString() : user.id;
+      if (!userId) {
+        return res
+          .status(400)
+          .json({ message: "Не вдалося визначити ID користувача" });
+      }
 
       console.log("Voting on story ID:", storyId);
       console.log("User data for voting:", user);
@@ -511,7 +526,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if story exists
       const story = await storage.getStory(storyId);
       if (!story) {
-        return res.status(404).json({ message: "Story not found" });
+        return res.status(404).json({ message: "Історія не знайдена" });
       }
 
       // Check if story has expired
@@ -519,25 +534,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (story.expiresAt < now) {
         return res
           .status(410)
-          .json({ message: "Cannot vote for an expired story" });
+          .json({ message: "Не можна голосувати за прострочені історії" });
       }
 
-      // Check if user has already voted
-      const hasVoted = await storage.hasVoted(storyId, userId);
-      if (hasVoted) {
-        return res
-          .status(400)
-          .json({ message: "You have already voted for this story" });
-      }
-
+      // Вызываем метод голосования, который теперь также поддерживает отмену голоса
       await storage.voteStory(storyId, userId);
 
       // Get updated story
       const updatedStory = await storage.getStory(storyId);
-      res.json(updatedStory);
+
+      // Определяем, проголосовал ли пользователь после операции
+      const hasVotedNow = await storage.hasVoted(storyId, userId);
+
+      // Добавляем информацию о статусе голоса в ответ
+      res.json({
+        ...updatedStory,
+        hasVoted: hasVotedNow,
+      });
     } catch (error) {
       console.error("Error voting for story:", error);
-      res.status(500).json({ message: "Error voting for story" });
+      // Відправляємо більш детальну помилку клієнту
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Помилка при голосуванні за історію";
+      res.status(500).json({
+        message: errorMessage,
+        details:
+          typeof error === "object" ? JSON.stringify(error) : String(error),
+      });
     }
   });
 

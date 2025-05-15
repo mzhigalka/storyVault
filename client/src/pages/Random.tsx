@@ -24,7 +24,7 @@ export default function Random() {
     queryFn: async () => {
       const res = await fetch("/api/stories/random");
       if (!res.ok) {
-        throw new Error("Failed to fetch a random story");
+        throw new Error("Не вдалося отримати випадкову історію");
       }
       return res.json();
     },
@@ -49,10 +49,10 @@ export default function Random() {
           className="flex items-center"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Home
+          Назад до дому
         </Button>
 
-        <h1 className="text-2xl font-bold">Random Story</h1>
+        <h1 className="text-2xl font-bold">Випадкова історія</h1>
 
         <Button
           variant="outline"
@@ -61,7 +61,7 @@ export default function Random() {
           disabled={isLoading}
         >
           <Shuffle className="h-4 w-4 mr-2" />
-          New Random
+          Нова випадкова історія
         </Button>
       </div>
 
@@ -86,7 +86,9 @@ export default function Random() {
         ) : isError ? (
           <div className="text-center py-12 w-full max-w-3xl">
             <div className="bg-white rounded-lg shadow-sm p-8 border border-light">
-              <h2 className="text-xl font-bold mb-4">Couldn't Find a Story</h2>
+              <h2 className="text-xl font-bold mb-4">
+                Не вдалося знайти історію
+              </h2>
               <p className="text-muted mb-6">
                 {(error as Error).message ||
                   "No stories are available right now."}
@@ -97,7 +99,7 @@ export default function Random() {
                   className="flex items-center justify-center"
                 >
                   <RotateCw className="h-4 w-4 mr-2" />
-                  Try Again
+                  Спробуйте ще раз
                 </Button>
                 <Button
                   variant="outline"
@@ -105,7 +107,7 @@ export default function Random() {
                   className="flex items-center justify-center"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+                  Назад до дому
                 </Button>
               </div>
             </div>
@@ -113,9 +115,9 @@ export default function Random() {
         ) : !story ? (
           <div className="text-center py-12 w-full max-w-3xl">
             <div className="bg-white rounded-lg shadow-sm p-8 border border-light">
-              <h2 className="text-xl font-bold mb-4">No Stories Available</h2>
+              <h2 className="text-xl font-bold mb-4">Немає історій</h2>
               <p className="text-muted mb-6">
-                There are no stories to display at the moment.
+                На даний момент немає історій, які б демонструвались.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
@@ -124,10 +126,10 @@ export default function Random() {
                     document.getElementById("create-story-button")?.click()
                   }
                 >
-                  Create a Story
+                  Створіть історію
                 </Button>
                 <Button variant="outline" onClick={() => navigate("/")}>
-                  Back to Home
+                  Назад до дому
                 </Button>
               </div>
             </div>
@@ -140,13 +142,13 @@ export default function Random() {
             />
 
             <div className="mt-8 text-center">
-              <p className="text-muted mb-6">Want to see another story?</p>
+              <p className="text-muted mb-6">Хочете побачити іншу історію?</p>
               <Button
                 onClick={handleRefresh}
                 className="flex items-center justify-center"
               >
                 <Shuffle className="h-4 w-4 mr-2" />
-                Show Me Another
+                Покажи мені іншу
               </Button>
             </div>
           </div>

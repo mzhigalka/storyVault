@@ -9,41 +9,41 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export default function Pagination({ 
-  currentPage, 
-  totalPages, 
-  totalItems, 
-  itemsPerPage, 
-  onPageChange 
+export default function Pagination({
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
 }: PaginationProps) {
   const start = (currentPage - 1) * itemsPerPage + 1;
   const end = Math.min(currentPage * itemsPerPage, totalItems);
 
-  // Helper to generate page numbers with ellipsis
   const getPageNumbers = () => {
     const pages = [];
-    
-    // Always show first page
+
     pages.push(1);
-    
+
     if (currentPage > 3) {
-      pages.push('ellipsis1');
+      pages.push("ellipsis1");
     }
-    
-    // Show pages around current page
-    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+
+    for (
+      let i = Math.max(2, currentPage - 1);
+      i <= Math.min(totalPages - 1, currentPage + 1);
+      i++
+    ) {
       pages.push(i);
     }
-    
+
     if (currentPage < totalPages - 2) {
-      pages.push('ellipsis2');
+      pages.push("ellipsis2");
     }
-    
-    // Always show last page if there is more than one page
+
     if (totalPages > 1) {
       pages.push(totalPages);
     }
-    
+
     return pages;
   };
 
@@ -57,27 +57,31 @@ export default function Pagination({
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
         >
-          Previous
+          Попередня
         </Button>
         <Button
           variant="outline"
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
         >
-          Next
+          Наступний
         </Button>
       </div>
-      
+
       <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-dark-light">
-            Showing <span className="font-medium">{start}</span> to <span className="font-medium">{end}</span> of{" "}
-            <span className="font-medium">{totalItems}</span> results
+            Показано <span className="font-medium">{start}</span> по{" "}
+            <span className="font-medium">{end}</span> з{" "}
+            <span className="font-medium">{totalItems}</span> результатів
           </p>
         </div>
-        
+
         <div>
-          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <nav
+            className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+            aria-label="Pagination"
+          >
             <Button
               variant="outline"
               size="sm"
@@ -85,12 +89,12 @@ export default function Pagination({
               disabled={currentPage === 1}
               onClick={() => onPageChange(currentPage - 1)}
             >
-              <span className="sr-only">Previous</span>
+              <span className="sr-only">Попередня</span>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            
+
             {getPageNumbers().map((page, index) => {
-              if (page === 'ellipsis1' || page === 'ellipsis2') {
+              if (page === "ellipsis1" || page === "ellipsis2") {
                 return (
                   <Button
                     key={`ellipsis-${index}`}
@@ -102,7 +106,7 @@ export default function Pagination({
                   </Button>
                 );
               }
-              
+
               return (
                 <Button
                   key={page}
@@ -114,7 +118,7 @@ export default function Pagination({
                 </Button>
               );
             })}
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -122,7 +126,7 @@ export default function Pagination({
               disabled={currentPage === totalPages}
               onClick={() => onPageChange(currentPage + 1)}
             >
-              <span className="sr-only">Next</span>
+              <span className="sr-only">Наступна</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </nav>
