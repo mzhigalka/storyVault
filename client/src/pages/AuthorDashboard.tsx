@@ -62,7 +62,7 @@ export default function AuthorDashboard() {
   return (
     <>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">My Stories</h1>
+        <h1 className="text-2xl font-bold mb-2">Мої історії</h1>
         <p className="text-muted">
           Керуйте своїми історіями та перегляньте їх статистику.
         </p>
@@ -113,7 +113,7 @@ export default function AuthorDashboard() {
                   document.getElementById("create-story-button")?.click()
                 }
               >
-                Створіть історію
+                Створити історію
               </Button>
             </div>
           ) : (

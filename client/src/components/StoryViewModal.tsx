@@ -156,10 +156,10 @@ export default function StoryViewModal({
             <span
               className={`countdown-timer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 storyExpiresAt.getTime() - Date.now() < 60 * 60 * 1000
-                  ? "bg-error/10 text-error"
+                  ? "bg-warning/10 text-warning"
                   : storyExpiresAt.getTime() - Date.now() < 24 * 60 * 60 * 1000
                   ? "bg-warning/10 text-warning"
-                  : "bg-secondary/10 text-secondary"
+                  : "bg-warning/10 text-warning"
               }`}
             >
               <svg

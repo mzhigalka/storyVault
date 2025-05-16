@@ -97,7 +97,7 @@ export default function Home() {
               className="bg-white text-primary hover:bg-gray-100"
               onClick={handleCreateStory}
             >
-              Створіть історію
+              Створити історію
             </Button>
           </div>
         </div>

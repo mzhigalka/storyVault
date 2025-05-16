@@ -42,7 +42,7 @@ export default function Random() {
     <>
       <StatsBar />
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <Button
           variant="outline"
           onClick={() => navigate("/")}
@@ -126,7 +126,7 @@ export default function Random() {
                     document.getElementById("create-story-button")?.click()
                   }
                 >
-                  Створіть історію
+                  Створити історію
                 </Button>
                 <Button variant="outline" onClick={() => navigate("/")}>
                   Назад до дому
