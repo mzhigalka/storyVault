@@ -180,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         {
           clientID: process.env.FACEBOOK_APP_ID,
           clientSecret: process.env.FACEBOOK_APP_SECRET,
-          callbackURL: "http://localhost:5001/api/auth/facebook/callback",
+          callbackURL: "/api/auth/facebook/callback",
           profileFields: ["id", "displayName", "photos", "email"],
           enableProof: true,
         },
