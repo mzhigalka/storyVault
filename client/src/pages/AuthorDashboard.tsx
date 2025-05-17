@@ -31,7 +31,7 @@ export default function AuthorDashboard() {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <h1 className="text-2xl font-bold mb-4">Інформаційна панель автора</h1>
-        <p className="text-muted mb-6">
+        <p className="text-muted-all mb-6">
           Будь ласка, увійдіть, щоб переглянути свої історії.
         </p>
         <Button
@@ -63,7 +63,7 @@ export default function AuthorDashboard() {
     <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">Мої історії</h1>
-        <p className="text-muted">
+        <p className="text-muted-all">
           Керуйте своїми історіями та перегляньте їх статистику.
         </p>
       </div>
@@ -101,11 +101,11 @@ export default function AuthorDashboard() {
               ))
           ) : activeStories.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-              <Clock className="mx-auto h-12 w-12 text-muted mb-4" />
+              <Clock className="mx-auto h-12 w-12 text-muted-all mb-4" />
               <h3 className="text-lg font-medium mb-2">
                 Немає активних історій
               </h3>
-              <p className="text-muted mb-4">
+              <p className="text-muted-all mb-4">
                 На даний момент у вас немає активних історій.
               </p>
               <Button
@@ -246,7 +246,7 @@ export default function AuthorDashboard() {
                         })}
                       </CardDescription>
                     </div>
-                    <span className="countdown-timer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted/10 text-muted">
+                    <span className="countdown-timer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted/10 text-muted-all">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-3.5 w-3.5 mr-1"
