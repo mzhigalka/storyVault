@@ -368,14 +368,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get("/api/auth/me", (req, res) => {
-    if (!req.user) {
+  // app.get("/api/auth/me", (req, res) => {
+  //   if (!req.user) {
+  //     return res.status(401).json({ message: "Not authenticated" });
+  //   }
+
+  //   const user = req.user as any;
+  //   const { password, ...userWithoutPassword } = user;
+  //   res.json(userWithoutPassword);
+  // });
+
+  app.get("/api/auth/me", isAuthenticated, (req, res) => {
+    const user = req.user;
+
+    if (!user) {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const user = req.user as any;
-    const { password, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
+    const { password, ...userWithoutPassword } = user as any;
+    return res.json(userWithoutPassword);
   });
 
   app.post("/api/stories", isAuthenticated, async (req, res) => {
