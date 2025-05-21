@@ -6,6 +6,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebookStrategy } from "passport-facebook";
+import { Strategy as GitHubStrategy } from "passport-github2";
 import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
@@ -16,7 +17,7 @@ const userLoginSchema = z.object({
 });
 
 const userSocialLoginSchema = z.object({
-  provider: z.enum(["google", "facebook"]),
+  provider: z.enum(["google", "github"]),
   providerId: z.string(),
   email: z.string().email(),
   username: z.string(),
@@ -177,29 +178,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Facebook OAuth strategy
-  if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+  // if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+  if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
     passport.use(
-      new FacebookStrategy(
+      new GitHubStrategy(
         {
-          clientID: process.env.FACEBOOK_APP_ID,
-          clientSecret: process.env.FACEBOOK_APP_SECRET,
+          clientID: process.env.GITHUB_CLIENT_ID,
+          clientSecret: process.env.GITHUB_CLIENT_SECRET,
           callbackURL:
-            process.env.FACEBOOK_CALLBACK_URL || "/api/auth/facebook/callback",
-          profileFields: ["id", "displayName", "photos", "email"],
-          enableProof: true,
+            process.env.GITHUB_CALLBACK_URL || "/api/auth/github/callback",
+          scope: ["user:email"],
         },
-        async (accessToken, refreshToken, profile, done) => {
+        async (
+          accessToken: any,
+          refreshToken: any,
+          profile: any,
+          done: any
+        ) => {
           try {
-            let user = await storage.getUserByProvider("facebook", profile.id);
+            let user = await storage.getUserByProvider("github", profile.id);
 
             if (!user) {
               const email =
                 profile.emails && profile.emails[0]
                   ? profile.emails[0].value
-                  : "";
-              const avatar =
-                profile.photos && profile.photos[0]
-                  ? profile.photos[0].value
                   : "";
 
               if (!email) {
@@ -214,10 +216,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
               user = await storage.createUser({
                 username: profile.displayName || email.split("@")[0],
                 email,
-                provider: "facebook",
+                provider: "github",
                 providerId: profile.id,
-                avatar,
                 password: null,
+                avatar: profile.photos?.[0]?.value || "",
               });
             }
 
@@ -324,44 +326,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
-  app.get("/api/auth/facebook", (req, res, next) => {
-    console.log("Facebook auth request received");
-    passport.authenticate("facebook", {
-      scope: ["public_profile", "email"],
-    })(req, res, next);
-  });
+  // app.get("/api/auth/facebook", (req, res, next) => {
+  //   console.log("Facebook auth request received");
+  //   passport.authenticate("facebook", {
+  //     scope: ["public_profile", "email"],
+  //   })(req, res, next);
+  // });
 
-  app.get("/api/auth/facebook/callback", (req, res, next) => {
-    console.log("Facebook callback received");
+  // app.get("/api/auth/facebook/callback", (req, res, next) => {
+  //   console.log("Facebook callback received");
 
-    passport.authenticate(
-      "facebook",
-      {
-        failureRedirect: "/?authError=true",
-      },
-      (err: any, user: any, info: any) => {
-        if (err) {
-          console.error("Facebook auth error:", err);
-          return res.redirect("/?authError=true");
-        }
+  //   passport.authenticate(
+  //     "facebook",
+  //     {
+  //       failureRedirect: "/?authError=true",
+  //     },
+  //     (err: any, user: any, info: any) => {
+  //       if (err) {
+  //         console.error("Facebook auth error:", err);
+  //         return res.redirect("/?authError=true");
+  //       }
 
-        if (!user) {
-          console.error("Facebook auth failed, no user returned:", info);
-          return res.redirect("/?authError=true");
-        }
+  //       if (!user) {
+  //         console.error("Facebook auth failed, no user returned:", info);
+  //         return res.redirect("/?authError=true");
+  //       }
 
-        req.login(user, (loginErr) => {
-          if (loginErr) {
-            console.error("Facebook login error:", loginErr);
-            return res.redirect("/?authError=true");
-          }
+  //       req.login(user, (loginErr) => {
+  //         if (loginErr) {
+  //           console.error("Facebook login error:", loginErr);
+  //           return res.redirect("/?authError=true");
+  //         }
 
-          console.log("Facebook auth successful for user:", user.username);
-          return res.redirect("/");
-        });
-      }
-    )(req, res, next);
-  });
+  //         console.log("Facebook auth successful for user:", user.username);
+  //         return res.redirect("/");
+  //       });
+  //     }
+  //   )(req, res, next);
+  // });
+
+  app.get("/api/auth/github", passport.authenticate("github"));
+  app.get(
+    "/api/auth/github/callback",
+    passport.authenticate("github", { failureRedirect: "/?authError=true" }),
+    (req, res) => {
+      res.redirect("/");
+    }
+  );
 
   app.post("/api/auth/logout", (req, res) => {
     req.logout((err) => {

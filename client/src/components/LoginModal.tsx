@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SiGoogle, SiFacebook } from "react-icons/si";
+import { SiGoogle, SiGithub } from "react-icons/si";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -94,11 +94,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     onClose();
   };
 
-  const handleSocialLogin = async (provider: "google" | "facebook") => {
+  const handleSocialLogin = async (provider: "google" | "github") => {
     if (provider === "google") {
       window.location.href = "/api/auth/google";
-    } else if (provider === "facebook") {
-      window.location.href = "/api/auth/facebook";
+    } else if (provider === "github") {
+      window.location.href = "/api/auth/github";
     }
   };
 
@@ -149,10 +149,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 type="button"
                 variant="outline"
                 className="w-full flex justify-center items-center"
-                onClick={() => handleSocialLogin("facebook")}
+                onClick={() => handleSocialLogin("github")}
               >
-                <SiFacebook className="mr-2 text-lg" />
-                Продовжуйте Facebook
+                <SiGithub className="mr-2 text-lg" />
+                Продовжуйте з GitHub
               </Button>
             </div>
 
@@ -259,10 +259,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 type="button"
                 variant="outline"
                 className="w-full flex justify-center items-center"
-                onClick={() => handleSocialLogin("facebook")}
+                onClick={() => handleSocialLogin("github")}
               >
-                <SiFacebook className="mr-2 text-lg" />
-                Продовжуйте Facebook
+                <SiGithub className="mr-2 text-lg" />
+                Продовжуйте з GitHub
               </Button>
             </div>
 
