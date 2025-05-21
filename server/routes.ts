@@ -5,7 +5,7 @@ import session from "express-session";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { Strategy as FacebookStrategy } from "passport-facebook";
+// @ts-ignore
 import { Strategy as GitHubStrategy } from "passport-github2";
 import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
@@ -326,45 +326,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
-  // app.get("/api/auth/facebook", (req, res, next) => {
-  //   console.log("Facebook auth request received");
-  //   passport.authenticate("facebook", {
-  //     scope: ["public_profile", "email"],
-  //   })(req, res, next);
-  // });
-
-  // app.get("/api/auth/facebook/callback", (req, res, next) => {
-  //   console.log("Facebook callback received");
-
-  //   passport.authenticate(
-  //     "facebook",
-  //     {
-  //       failureRedirect: "/?authError=true",
-  //     },
-  //     (err: any, user: any, info: any) => {
-  //       if (err) {
-  //         console.error("Facebook auth error:", err);
-  //         return res.redirect("/?authError=true");
-  //       }
-
-  //       if (!user) {
-  //         console.error("Facebook auth failed, no user returned:", info);
-  //         return res.redirect("/?authError=true");
-  //       }
-
-  //       req.login(user, (loginErr) => {
-  //         if (loginErr) {
-  //           console.error("Facebook login error:", loginErr);
-  //           return res.redirect("/?authError=true");
-  //         }
-
-  //         console.log("Facebook auth successful for user:", user.username);
-  //         return res.redirect("/");
-  //       });
-  //     }
-  //   )(req, res, next);
-  // });
-
   app.get("/api/auth/github", passport.authenticate("github"));
   app.get(
     "/api/auth/github/callback",
@@ -382,16 +343,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Successfully logged out" });
     });
   });
-
-  // app.get("/api/auth/me", (req, res) => {
-  //   if (!req.user) {
-  //     return res.status(401).json({ message: "Not authenticated" });
-  //   }
-
-  //   const user = req.user as any;
-  //   const { password, ...userWithoutPassword } = user;
-  //   res.json(userWithoutPassword);
-  // });
 
   app.get("/api/auth/me", isAuthenticated, (req, res) => {
     const user = req.user;
