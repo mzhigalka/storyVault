@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatTimeRemaining } from "@/lib/utils/time";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 interface StoryCardProps {
   story: {
@@ -43,9 +44,11 @@ export default function StoryCard({
   const expiresAt = new Date(story.expiresAt);
   const isExpired = isPast(expiresAt);
 
+  const [location] = useLocation();
+  const isHome = location === "/";
+
   const { mutate: voteForStory, isPending: isVoting } = useMutation({
     mutationFn: async (storyId: string | number) => {
-      // Перетворюємо ID на рядок для правильного передавання у запит
       const storyIdStr =
         typeof storyId === "string" ? storyId : String(storyId);
 
@@ -56,7 +59,6 @@ export default function StoryCard({
         throw new Error("Не можна голосувати: ID історії відсутній");
       }
 
-      // Виконуємо запит голосування
       const res = await apiRequest(
         "POST",
         `/api/stories/${storyIdStr}/vote`,
@@ -99,8 +101,6 @@ export default function StoryCard({
       return;
     }
 
-    // Убираем проверку - теперь голосование работает как переключатель
-
     if (isExpired) {
       toast({
         title: "Історія прострочена",
@@ -113,7 +113,6 @@ export default function StoryCard({
     voteForStory(story._id || story.id);
   };
 
-  // Calculate time status for display
   const getExpiryStatus = () => {
     if (isExpired) {
       return { text: "Закінчено", className: "bg-muted/10 text-muted-all" };
@@ -211,7 +210,7 @@ export default function StoryCard({
 
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-1">
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               className={`text-muted-all p-0 ${
@@ -226,7 +225,27 @@ export default function StoryCard({
                 <ArrowUp className="h-5 w-5" />
               )}
             </Button>
-            <span className="font-medium text-dark">{story.votes}</span>
+            <span className="font-medium text-dark">{story.votes}</span> */}
+            {isHome && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`text-muted-all p-0 ${
+                    hasVoted ? "text-primary" : "hover:text-primary"
+                  } ${isVoting ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={handleVote}
+                  disabled={isVoting || hasVoted}
+                >
+                  {hasVoted ? (
+                    <ArrowUpCircle className="h-5 w-5" />
+                  ) : (
+                    <ArrowUp className="h-5 w-5" />
+                  )}
+                </Button>
+                <span className="font-medium text-dark">{story.votes}</span>
+              </>
+            )}
           </div>
 
           {onViewClick ? (

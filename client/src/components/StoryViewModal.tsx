@@ -191,7 +191,7 @@ export default function StoryViewModal({
 
         <div className="mt-6 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               className={`inline-flex items-center ${
@@ -202,7 +202,7 @@ export default function StoryViewModal({
             >
               <ArrowUp className="h-5 w-5 mr-1" />
               <span className="font-medium">{voteCount}</span>
-            </Button>
+            </Button> */}
 
             <Button
               variant="ghost"
