@@ -1,4 +1,10 @@
-import { createContext, useState, useContext, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +21,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  register: (
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
   logout: () => Promise<void>;
   loginWithGoogle: () => void;
   loginWithFacebook: () => void;
@@ -44,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const res = await fetch("/api/auth/me", {
           credentials: "include",
         });
-        
+
         if (res.ok) {
           const userData = await res.json();
           setUser(userData);
@@ -55,22 +65,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
       }
     };
-    
+
     checkAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      const res = await apiRequest("POST", "/api/auth/login", { email, password });
+      const res = await apiRequest("POST", "/api/auth/login", {
+        email,
+        password,
+      });
       const userData = await res.json();
-      
+
       setUser(userData);
-      
+
       toast({
         title: "Login Successful",
         description: `Welcome back, ${userData.username}!`,
       });
-      
+
       return userData;
     } catch (error: any) {
       toast({
@@ -82,23 +95,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (
+    username: string,
+    email: string,
+    password: string
+  ) => {
     try {
       const res = await apiRequest("POST", "/api/auth/register", {
         username,
         email,
         password,
       });
-      
+
       const userData = await res.json();
-      
+
       setUser(userData);
-      
+
       toast({
         title: "Registration Successful",
         description: `Welcome, ${userData.username}!`,
       });
-      
+
       return userData;
     } catch (error: any) {
       toast({
@@ -113,12 +130,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await apiRequest("POST", "/api/auth/logout", {});
-      
+
       setUser(null);
-      
-      // Clear any user-related queries from the cache
+
       queryClient.invalidateQueries();
-      
+
       toast({
         title: "Logged Out",
         description: "You have been successfully logged out",
