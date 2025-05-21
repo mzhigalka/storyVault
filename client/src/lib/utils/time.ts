@@ -4,7 +4,6 @@ export function formatTimeRemaining(date: Date | string): string {
   const expiryDate = typeof date === "string" ? new Date(date) : date;
   const now = new Date();
 
-  // If date is in the past
   if (expiryDate < now) {
     return "Термін дії минув";
   }
@@ -46,7 +45,6 @@ export function getExpiryClassName(date: Date | string): string {
   const expiryDate = typeof date === "string" ? new Date(date) : date;
   const now = new Date();
 
-  // If date is in the past
   if (expiryDate < now) {
     return "bg-muted/10 text-muted-all";
   }

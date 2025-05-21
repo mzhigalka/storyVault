@@ -133,7 +133,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(null);
 
-      // Clear any user-related queries from the cache
       queryClient.invalidateQueries();
 
       toast({
