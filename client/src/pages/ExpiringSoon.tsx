@@ -53,7 +53,7 @@ export default function ExpiringSoon() {
       case "day":
         return "Зникнення протягом 24 годин";
       case "week":
-        return "Зникнення протягом наступного тижня";
+        return "Зникнення протягом тижня";
       default:
         return "Незабаром зникає";
     }
@@ -103,8 +103,7 @@ export default function ExpiringSoon() {
         <div className="flex items-center">
           <Clock className="h-5 w-5 text-primary mr-2" />
           <p className="text-sm text-primary font-medium">
-            {getTimeframeDescription()} - зловити ці історії до того, як вони
-            Залишай!
+            {getTimeframeDescription()}
           </p>
         </div>
       </div>
@@ -136,13 +135,6 @@ export default function ExpiringSoon() {
                   `No stories expiring within the ${selectedTimeframe} timeframe were found.`}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  onClick={handleRefresh}
-                  className="flex items-center justify-center"
-                >
-                  <Shuffle className="h-4 w-4 mr-2" />
-                  Спробуйте іншу часову рамку
-                </Button>
                 <Button
                   variant="outline"
                   onClick={() => navigate("/")}

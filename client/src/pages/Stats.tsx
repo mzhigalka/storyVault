@@ -81,8 +81,7 @@ export default function Stats() {
         <CardContent>
           <p className="text-muted-all">
             Дослідіть поточний стан ShitHappens. Подивіться, скільки історій
-            доступні, термін дії яких скоро закінчиться, і загальна платформа
-            діяльність.
+            доступні, термін дії яких скоро закінчиться.
           </p>
         </CardContent>
       </Card>

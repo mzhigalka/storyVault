@@ -260,13 +260,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                       </div>
                     )}
                   />
-
-                  <a
-                    href="#forgot-password"
-                    className="text-sm font-medium text-primary hover:text-primary/80"
-                  >
-                    Забули пароль?
-                  </a>
                 </div>
 
                 <Button type="submit" className="w-full">
