@@ -108,13 +108,6 @@ export default function AuthorDashboard() {
               <p className="text-muted-all mb-4">
                 На даний момент у вас немає активних історій.
               </p>
-              <Button
-                onClick={() =>
-                  document.getElementById("create-story-button")?.click()
-                }
-              >
-                Створити історію
-              </Button>
             </div>
           ) : (
             activeStories.map((story: any) => (
